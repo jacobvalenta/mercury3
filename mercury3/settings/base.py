@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'mercury3.core',
     'mercury3.customers',
     'mercury3.items',
+    'mercury3.stores',
+    'mercury3.transactions'
 ]
 
 MIDDLEWARE = [
