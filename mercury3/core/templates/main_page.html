@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block "content" %}
+	<h3>Customers</h3>
+	<a href="{% url 'customer-create' %}">Add Customer</a><br />
+	<a href="{% url 'customer-search' %}">Customer Search</a>
+{% endblock %}
