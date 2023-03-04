@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'mercury3.core',
     'mercury3.customers',
     'mercury3.items',
 ]
