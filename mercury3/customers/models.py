@@ -17,4 +17,16 @@ class Customer(models.Model):
 	phone_number = models.CharField(max_length=10, blank=True, null=True)
 
 	def __str__(self):
-		return ' '.join(filter(None, (self.first_name, self.middle_name, self.last_name)))
+		return self.get_full_name()
+
+	def get_full_name(self):
+		return ' '.join(filter(None, (self.first_name, self.middle_name, self.last_name)))		
+
+	def get_absolute_url(self):
+	    return "/customers/{0}/".format(self.pk)
+
+	def display_address(self):
+		return '{0}{1}<br />{2}, {3} {4}' \
+			.format(self.address_1,
+					"<br />{0}".format(self.address_2) if self.address_2 else "",
+					self.city, self.state, self.zip_code)

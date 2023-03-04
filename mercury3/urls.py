@@ -20,4 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('mercury3.core.urls')),
+    path('', include('mercury3.customers.urls'))
 ]
