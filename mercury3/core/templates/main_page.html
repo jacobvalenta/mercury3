@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
 {% block "content" %}
-	<h3>Customers</h3>
+	<h2>Customers</h2>
 	<a href="{% url 'customer-create' %}">Add Customer</a><br />
 	<a href="{% url 'customer-search' %}">Customer Search</a>
 
-	<h3>Transactions</h3>
-	<a href="#">New Transaction</a>
+	<h2>Transactions</h2>
+	<a href="{% url 'transactions:create-zero-info' %}">New Transaction</a>
 {% endblock %}
