@@ -15,3 +15,6 @@ class Transaction(models.Model):
 	total = models.DecimalField(max_digits=9, decimal_places=2)
 
 	timestamp = models.DateTimeField(auto_now_add=True)
+
+	def get_absolute_url(self):
+		return "/transactions/{0}/".format(self.pk)

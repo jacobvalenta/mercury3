@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from django.views.generic.edit import CreateView
 
-# Create your views here.
+from .models import Transaction
+
+class TransactionCreateView(CreateView):
+	template_name = "transactions/create.html"
+	model = Transaction
+	fields = ["customer", "items"]

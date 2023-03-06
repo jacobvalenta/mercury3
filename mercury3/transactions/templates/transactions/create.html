@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block "javascript" %}
+	<script type="text/javascript">
+		var selectCustomer = function(pk, name){
+			console.log("here");
+			$("input[name=customer]").val(pk);
+			$("#selected-customer").empty();
+			$("#selected-customer").html(name);
+		}
+
+		var getItem = function(pk){
+			$.ajax('/items/search/simple/', {method: "POST", data: {q: pk, csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()}})
+			.done(function(data){
+				$("#item-search").val("");
+
+				var items = $("#items");
+				var i = $("#items .item").length
+				if (i == 0){
+					items.empty();
+				}
+				
+				var make_model = [data.make, data.model].join(' ');
+
+				var item = $("<div class=\"item\">" + data.pk + ": " + make_model + "<input style=\"width: 55px;\" class=\"price\" name=\"items[" + i.toString() + "][price]\" value=\""+ data.price + "\" onchange=\"computeTotals()\" /> </div>");
+				var itemInput = $('<input type="hidden" value="' + data.pk + '" name="items[' + i.toString() + '][number]"/>')
+				item.appendTo(items);
+				itemInput.appendTo($("#item-inputs"));
+				computeTotals();
+			})
+		}
+
+		var computeTotals = function(){
+			var items = $("#items .item").length;
+			subtotal = 0.00;
+			for (var i = 0; i < items; i++) {
+				subtotal += parseFloat($("input[name=items[" + i + "][price]]").val());
+			}
+			$("#subtotal").text("$" + subtotal.toFixed(2));
+
+			tax = subtotal * 0.06;
+			$("#tax").text("$" + tax.toFixed(2));
+
+			$("#total").text("$" + (subtotal + tax).toFixed(2));
+		}
+
+		$(document).ready(function(){
+			$("#customer-search").on('keyup', function(){
+				$.ajax('/customers/search/', {method: "POST", data: {q: $("#customer-search").val(), csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()}})
+				.done(function(data){
+					results = $("#customer-autocomplete");
+					results.empty();
+					for (var i = 0; i < data.length; i++) {
+						result = data[i];
+						$("<div>" + result.full_name + '<a href="#" style="float: right;" onclick="selectCustomer(' + result.pk + ", '" + result.full_name + '\');">Select</a></div>').appendTo(results)
+					}
+					results.show();
+				})
+			});
+			$(document).on("click", function(e){
+				if ($(e).attr('id') != "customer-search"){
+					$("#customer-autocomplete").hide();
+				}
+			});
+
+			$("#submit-item-search").on('keyUp', function(e){
+				if (e.which == 13){
+					e.preventDefault();
+					getItem($("#item-search").val());
+				}
+			})
+
+			$("#submit-item-search").on('click', function(e){
+				e.preventDefault();
+				getItem($("#item-search").val());
+			})
+		});
+	</script>
+{% endblock %}
+
+{% block "content" %}
+	<h2>New Transaction</h2>
+	<form action="" method="POST">
+		{% csrf_token %}
+
+		<!-- Customer -->
+		<div>
+			<div style="display: inline-block; vertical-align: top;">
+				<label for="customer">Customer:</label>
+			</div>
+			<div style="display: inline-block;">
+				<div id="selected-customer" style="display: inline-block;"><i>No Customer</i></div><br />
+				<input type="hidden" name="customer" />
+				<input id="customer-search" type="text" name="customer-search" placeholder="Customer search..." />
+				<div id="customer-autocomplete" style="display: none; border: 1px solid #444; border-top: none;">
+				</div>
+			</div>
+		</div>
+
+		<br />
+
+		<!-- Items -->
+		<div>
+			<div style="display: inline-block; vertical-align: top;">
+				<label for="customer">Items:</label>
+			</div>
+			<div style="display: inline-block;">
+				<div id="items">
+					<i>No Items</i>
+				</div>
+				<div id="item-inputs" style="display: none;">
+
+				</div>
+
+				<br />
+				<div>
+					<input id="item-search" type="text" name="item-search" placeholder="Item Number..." />
+					<button id="submit-item-search">Go</button>
+				</div>
+			</div>
+		</div>
+
+		<br />
+
+		Subtotal: <span id="subtotal">$0.00</span><br />
+		Tax: <span id="tax">$0.00</span><br />
+		Total: <span id="total">$0.00</span><br />
+
+		<br />
+
+		<button type="submit">Submit</button>
+	</form>
+{% endblock %}
