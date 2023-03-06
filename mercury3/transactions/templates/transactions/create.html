@@ -22,11 +22,12 @@
 				
 				var make_model = [data.make, data.model].join(' ');
 
-				var item = $("<div class=\"item\">" + data.pk + ": " + make_model + "<input style=\"width: 55px;\" class=\"price\" name=\"items[" + i.toString() + "][price]\" value=\""+ data.price + "\" onchange=\"computeTotals()\" /> </div>");
-				var itemInput = $('<input type="hidden" value="' + data.pk + '" name="items[' + i.toString() + '][number]"/>')
+				var item = $("<div class=\"item\">" + data.pk + ": " + make_model + "<input style=\"width: 55px;\" class=\"price\" name=\"form-" + i.toString() + "-price\" value=\""+ data.price + "\" onchange=\"computeTotals()\" /> </div>");
+				var itemInput = $('<input type="hidden" value="' + data.pk + '" name="form-' + i.toString() + '-item"/>')
 				item.appendTo(items);
 				itemInput.appendTo($("#item-inputs"));
 				computeTotals();
+				computeFormSetData();
 			})
 		}
 
@@ -34,7 +35,7 @@
 			var items = $("#items .item").length;
 			subtotal = 0.00;
 			for (var i = 0; i < items; i++) {
-				subtotal += parseFloat($("input[name=items[" + i + "][price]]").val());
+				subtotal += parseFloat($($(".item input")[i]).val());
 			}
 			$("#subtotal").text("$" + subtotal.toFixed(2));
 
@@ -42,6 +43,11 @@
 			$("#tax").text("$" + tax.toFixed(2));
 
 			$("#total").text("$" + (subtotal + tax).toFixed(2));
+		}
+
+		var computeFormSetData = function(){
+			var items = $("#items .item").length;
+			$("#total-forms").val(items);
 		}
 
 		$(document).ready(function(){
@@ -80,6 +86,14 @@
 
 {% block "content" %}
 	<h2>New Transaction</h2>
+
+	{% if form.errors %}
+		{{ form.errors }}
+	{% endif %}
+	{% if item_formset.errors %}
+		{{ item_formset.errors }}
+	{% endif %}
+
 	<form action="" method="POST">
 		{% csrf_token %}
 
@@ -91,7 +105,7 @@
 			<div style="display: inline-block;">
 				<div id="selected-customer" style="display: inline-block;"><i>No Customer</i></div><br />
 				<input type="hidden" name="customer" />
-				<input id="customer-search" type="text" name="customer-search" placeholder="Customer search..." />
+				<input id="customer-search" type="text" placeholder="Customer search..." />
 				<div id="customer-autocomplete" style="display: none; border: 1px solid #444; border-top: none;">
 				</div>
 			</div>
@@ -114,7 +128,7 @@
 
 				<br />
 				<div>
-					<input id="item-search" type="text" name="item-search" placeholder="Item Number..." />
+					<input id="item-search" type="text" placeholder="Item Number..." />
 					<button id="submit-item-search">Go</button>
 				</div>
 			</div>
@@ -127,6 +141,9 @@
 		Total: <span id="total">$0.00</span><br />
 
 		<br />
+
+		<input type="hidden" name="form-INITIAL_FORMS" value="0" />
+		<input id="total-forms" type="hidden" name="form-TOTAL_FORMS">
 
 		<button type="submit">Submit</button>
 	</form>
