@@ -22,7 +22,7 @@
 				
 				var make_model = [data.make, data.model].join(' ');
 
-				var item = $("<div class=\"item\">" + data.pk + ": " + make_model + "<input style=\"width: 55px;\" class=\"price\" name=\"form-" + i.toString() + "-price\" value=\""+ data.price + "\" onchange=\"computeTotals()\" /> </div>");
+				var item = $("<div class=\"item\">" + data.pk + ": " + make_model + "<input style=\"width: 55px;\" class=\"price\" name=\"form-" + i.toString() + "-price\" value=\""+ data.price + "\" onchange=\"computeTotals()\" /> <a href=\"#\" onclick=\"removeItem(event, this);\">Remove</a></div>");
 				var itemInput = $('<input type="hidden" value="' + data.pk + '" name="form-' + i.toString() + '-item"/>')
 				item.appendTo(items);
 				itemInput.appendTo($("#item-inputs"));
@@ -48,6 +48,21 @@
 		var computeFormSetData = function(){
 			var items = $("#items .item").length;
 			$("#total-forms").val(items);
+		}
+
+		var removeItem = function(ev, el){
+			ev.preventDefault();
+
+			var index = $(el).parent().find('input').attr('name').split('-')[1];
+			$(el).parent().remove();
+			$('#item-inputs input')[index].remove()
+
+			for (var i = 0; i < $("#items .item").length; i++) {
+				$($("#items .item")[i]).find('input').attr('name', `form-${i}-price`)
+				$($("#item-inputs input")[i]).attr('name', `form-${i}-item`)
+			}
+
+			computeTotals();
 		}
 
 		$(document).ready(function(){
