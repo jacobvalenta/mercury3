@@ -6,5 +6,6 @@
 	<a href="{% url 'customer-search' %}">Customer Search</a>
 
 	<h2>Transactions</h2>
-	<a href="{% url 'transactions:create-zero-info' %}">New Transaction</a>
+	<a href="{% url 'transactions:create-out-zero-info' %}">New Buy/Pawn</a> <br />
+	<a href="{% url 'transactions:create-out-zero-info' %}">New Sale/Layaway</a>
 {% endblock %}

@@ -10,7 +10,7 @@
 					results.html("");
 					for (var i = 0; i < data.length; i++) {
 						result = data[i];
-						$("<div>" + result.full_name + '<a href="' + result.absolute_url + '">View</a></div>').appendTo(results)
+						$("<div>" + result.rank + " " + result.full_name + '<a href="' + result.absolute_url + '">View</a></div>').appendTo(results)
 					}
 				})
 			})
