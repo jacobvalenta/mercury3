@@ -20,5 +20,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('mercury3.core.urls')),
-    path('', include('mercury3.customers.urls'))
+    path('', include('mercury3.customers.urls')),
+    path('items/', include(('mercury3.items.urls', 'items'), namespace="items")),
+    path('transactions/', include(('mercury3.transactions.urls', 'transactions'), namespace="transactions"))
 ]
