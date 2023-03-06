@@ -3,8 +3,8 @@
 {% block "javascript" %}
 	<script type="text/javascript">
 		var selectCustomer = function(pk, name){
-			console.log("here");
 			$("input[name=customer]").val(pk);
+			$("#customer-search").val('')
 			$("#selected-customer").empty();
 			$("#selected-customer").html(name);
 		}
@@ -85,6 +85,8 @@
 {% endblock %}
 
 {% block "content" %}
+	<a href="/">Back</a>
+
 	<h2>New Transaction</h2>
 
 	{% if form.errors %}
@@ -99,11 +101,11 @@
 
 		<!-- Customer -->
 		<div>
-			<div style="display: inline-block; vertical-align: top;">
-				<label for="customer">Customer:</label>
-			</div>
-			<div style="display: inline-block;">
-				<div id="selected-customer" style="display: inline-block;"><i>No Customer</i></div><br />
+			<h3>
+				Customer:
+			</h3>
+			<div style="margin-left: 28px;">
+				<div id="selected-customer" style="display: inline-block;"><i>No Customer</i><br /><br /></div><br />
 				<input type="hidden" name="customer" />
 				<input id="customer-search" type="text" placeholder="Customer search..." />
 				<div id="customer-autocomplete" style="display: none; border: 1px solid #444; border-top: none;">
@@ -115,10 +117,10 @@
 
 		<!-- Items -->
 		<div>
-			<div style="display: inline-block; vertical-align: top;">
-				<label for="customer">Items:</label>
-			</div>
-			<div style="display: inline-block;">
+			<h3>
+				Items:
+			</h3>
+			<div style="margin-left: 28px">
 				<div id="items">
 					<i>No Items</i>
 				</div>
@@ -143,8 +145,10 @@
 		<br />
 
 		<input type="hidden" name="form-INITIAL_FORMS" value="0" />
-		<input id="total-forms" type="hidden" name="form-TOTAL_FORMS">
+		<input id="total-forms" type="hidden" name="form-TOTAL_FORMS" />
 
-		<button type="submit">Submit</button>
+		<div class="text-center">
+			<button type="submit">Submit</button>
+		</div>
 	</form>
 {% endblock %}

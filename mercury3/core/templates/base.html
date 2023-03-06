@@ -4,6 +4,20 @@
 
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
+	<style>
+		h1, h2, h3{
+			margin-bottom: 0px;
+		}
+		.text-center{
+			text-align: center;
+		}
+		#version{
+			margin-top: 12px;
+			font-size: 12px;
+			text-align: center;
+		}
+	</style>
+
 	<script
 	  src="https://code.jquery.com/jquery-3.6.3.min.js"
 	  integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
@@ -13,10 +27,13 @@
 	{% endblock %}
 	</head>
 	<body>
-		<h1>Mercury Pawn <small>3.0.0</small></h1>
+		<h1>Mercury Pawn</h1>
 		<div id="content">
 			{% block "content" %}
 			{% endblock %}
+		</div>
+		<div id="version">
+			<span>Version {{ VERSION }}</span>
 		</div>
 	</body>
 </html>
