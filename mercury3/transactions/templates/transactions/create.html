@@ -2,11 +2,11 @@
 
 {% block "javascript" %}
 	<script type="text/javascript">
-		var selectCustomer = function(pk, name){
+		var selectCustomer = function(pk, name, address){
 			$("input[name=customer]").val(pk);
 			$("#customer-search").val('')
 			$("#selected-customer").empty();
-			$("#selected-customer").html(name);
+			$("#selected-customer").html(`<p>${name}<br />${address}</p>`);
 		}
 
 		var getItem = function(pk){
@@ -22,7 +22,7 @@
 				
 				var make_model = [data.make, data.model].join(' ');
 
-				var item = $("<div class=\"item\">" + data.pk + ": " + make_model + "<input style=\"width: 55px;\" class=\"price\" name=\"form-" + i.toString() + "-price\" value=\""+ data.price + "\" onchange=\"computeTotals()\" /> <a href=\"#\" onclick=\"removeItem(event, this);\">Remove</a></div>");
+				var item = $("<div class=\"item\"><a href=\"#\" onclick=\"removeItem(event, this);\">X</a>&nbsp;&nbsp;&nbsp;" + data.pk + ": " + make_model + "<input style=\"width: 55px;\" class=\"price\" name=\"form-" + i.toString() + "-price\" value=\""+ data.price + "\" onchange=\"computeTotals()\" /></div>");
 				var itemInput = $('<input type="hidden" value="' + data.pk + '" name="form-' + i.toString() + '-item"/>')
 				item.appendTo(items);
 				itemInput.appendTo($("#item-inputs"));
@@ -73,7 +73,7 @@
 					results.empty();
 					for (var i = 0; i < data.length; i++) {
 						result = data[i];
-						$("<div>" + result.full_name + '<a href="#" style="float: right;" onclick="selectCustomer(' + result.pk + ", '" + result.full_name + '\');">Select</a></div>').appendTo(results)
+						$("<div>" + result.full_name + '<a href="#" style="float: right;" onclick="selectCustomer(' + result.pk + ", '" + result.full_name + '\', \'' + result.address_1 + '\');">Select</a></div>').appendTo(results)
 					}
 					results.show();
 				})
@@ -100,9 +100,9 @@
 {% endblock %}
 
 {% block "content" %}
+	<br />
 	<a href="/">Back</a>
-
-	<h2>New Transaction</h2>
+	<h2 class="text-center">New Transaction</h2>
 
 	{% if form.errors %}
 		{{ form.errors }}
@@ -119,8 +119,8 @@
 			<h3>
 				Customer:
 			</h3>
-			<div style="margin-left: 28px;">
-				<div id="selected-customer" style="display: inline-block;"><i>No Customer</i><br /><br /></div><br />
+			<div style="margin-left: 18px;">
+				<div id="selected-customer" style="display: inline-block;"><p><i>No Customer</i></p></div><br />
 				<input type="hidden" name="customer" />
 				<input id="customer-search" type="text" placeholder="Customer search..." />
 				<div id="customer-autocomplete" style="display: none; border: 1px solid #444; border-top: none;">
@@ -135,15 +135,14 @@
 			<h3>
 				Items:
 			</h3>
-			<div style="margin-left: 28px">
+			<div style="margin-left: 18px">
 				<div id="items">
-					<i>No Items</i>
+					<p><i>No Items</i></p>
 				</div>
 				<div id="item-inputs" style="display: none;">
 
 				</div>
 
-				<br />
 				<div>
 					<input id="item-search" type="text" placeholder="Item Number..." />
 					<button id="submit-item-search">Go</button>
@@ -152,10 +151,19 @@
 		</div>
 
 		<br />
+		<hr />
+		<div class="text-right">
+			<input type="radio" value="sale"> <label for="sale">Sale</label>
+			<input type="radio" value="layaway"> <label for="layaway">Layaway</label>
+		</div>
+		<hr />
+		<br />
 
-		Subtotal: <span id="subtotal">$0.00</span><br />
-		Tax: <span id="tax">$0.00</span><br />
-		Total: <span id="total">$0.00</span><br />
+		<div id="totals" style="text-align: right;">
+			Subtotal: <span id="subtotal">$0.00</span><br />
+			Tax: <span id="tax">$0.00</span><br />
+			Total: <span id="total">$0.00</span><br />
+		</div>
 
 		<br />
 
