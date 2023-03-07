@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.forms import formset_factory
+from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.views.generic import DetailView, TemplateView
@@ -25,32 +26,19 @@ class TransactionCreateView(TemplateView):
 		self.formset = ItemFormSet(request.POST)
 
 		if self.formset.is_valid() and self.form.is_valid():
-			transaction = self.form.save(commit=False)
-
-			subtotal = Decimal(0.00)
-
+			item_data = []
 			for item_form in self.formset:
-				subtotal += item_form.cleaned_data['price']
+				item_data.append({'item': item_form.cleaned_data['item'],
+								  'price': item_form.cleaned_data['price']})
 
-			tax = Decimal(0.06) * subtotal
-			total = subtotal + tax
+			transaction = self.form.save(item_data=item_data)
 
-			transaction.subtotal = subtotal
-			transaction.tax = tax
-			transaction.total = total
-
-			transaction.save();
-
-			for item_form in self.formset:
-				titem = TransactionItem(transaction=transaction,
-										item=item_form.cleaned_data['item'],
-										price=item_form.cleaned_data['price'])
-				titem.save()
-
-			return reverse('transactions:detail', transaction.pk)
+			return HttpResponseRedirect(reverse('transactions:detail',
+						   kwargs={'pk': transaction.pk}))
 
 		else:
-			return TemplateResponse(request, 'transactions/create.html', self.get_context_data())
+			return TemplateResponse(request, 'transactions/create.html',
+									self.get_context_data())
 
 	def get_context_data(self, *args, **kwargs):
 		data = super().get_context_data(*args, **kwargs)
@@ -62,3 +50,8 @@ class TransactionCreateView(TemplateView):
 
 class TransactionDetailView(DetailView):
 	template_name = "transactions/detail.html"
+	model = Transaction
+
+	def get(self, request, pk):
+		print(dir(self.get_object()))
+		return super().get(request, pk)
