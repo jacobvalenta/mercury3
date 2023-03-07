@@ -1,9 +1,31 @@
 {% extends 'base.html' %}
 
 {% block "content" %}
-	<h2>Transaction Record:</h2>
+	<h2 class="text-center">Transaction Record</h2>
 
-	Date: {{ object.timestamp|data:"%M %d %Y" }}<br />
+	<p class="text-center">Date: {{ object.timestamp|date:"M d, Y" }}</p>
+
+	<h3>Items:</h3>
+
+	<div id="items" style="margin-left: 18px; margin-right: 18px;">
+		{% for titem in object.transactionitem_set.all %}
+			<div class="item">
+				<a href="/item/{{ titem.item.pk }}/">{{ titem.item }}</a> 
+				<div style="float: right;">
+					{{ titem.price }}
+				</div>
+			</div>
+
+		{% endfor %}
+	</div>
+
+	<hr />
+	<div class="text-right">
+		Subtotal: {{ object.subtotal }}<br />
+		Tax: {{ object.tax }}<br />
+		Total: {{ object.total }}<br />
+	</div>
+	<hr />
 
 	<h3>Actions</h3>
 	<a href="#">Void</a><br />
