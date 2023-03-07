@@ -6,14 +6,50 @@
 
 	<style>
 		h1, h2, h3{
+			margin-top: 0px;
 			margin-bottom: 0px;
 		}
+
+		.container{
+			width: 420px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		#items .item{
+			font-size: 14px;
+			margin-top: 5px;
+			margin-bottom: 5px;
+			padding-top: 6px;
+			height: 22px;
+		}
+
+		#items .item input{
+			float: right;
+			clear: both;
+			position: relative;
+			top: -4px;
+		}
+
+		#items .item a{
+			text-decoration: none;
+			color: red;
+		}
+
+		#subtotal, #tax, #total{
+			display: inline-block;
+			width: 76px;
+		}
+
 		.text-center{
 			text-align: center;
 		}
+		.text-right{
+			text-align: right;
+		}
 		#version{
 			margin-top: 12px;
-			font-size: 12px;
+			font-size: 13px;
 			text-align: center;
 		}
 	</style>
@@ -27,13 +63,15 @@
 	{% endblock %}
 	</head>
 	<body>
-		<h1>Mercury Pawn</h1>
-		<div id="content">
-			{% block "content" %}
-			{% endblock %}
-		</div>
-		<div id="version">
-			<span>Version {{ VERSION }}</span>
+		<div class="container">
+			<h1>Mercury Pawn</h1>
+			<div id="content">
+				{% block "content" %}
+				{% endblock %}
+			</div>
+			<div id="version">
+				<span>Version {{ VERSION }}</span>
+			</div>
 		</div>
 	</body>
 </html>
