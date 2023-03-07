@@ -7,7 +7,7 @@ class TransactionItem(models.Model):
 	price = models.DecimalField(max_digits=9, decimal_places=2)
 
 class Transaction(models.Model):
-	customer = models.ForeignKey('customers.Customer', on_delete=models.CASCADE)
+	customer = models.ForeignKey('customers.Customer', on_delete=models.CASCADE, blank=True, null=True)
 	items = models.ManyToManyField('items.Item', through="transactions.TransactionItem")
 
 	subtotal = models.DecimalField(max_digits=9, decimal_places=2)
