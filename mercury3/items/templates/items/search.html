@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block "javascript" %}
+	<script>
+		$(document).ready(function(){
+			$("input[name=q]").on('keyup', function(){
+				$.ajax('', {method: "POST", data: {q: $("input[name=q]").val(), csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()}})
+				.done(function(data){
+					results = $("#results");
+					results.html("");
+					for (var i = 0; i < data.length; i++) {
+						item = data[i];
+
+						make_model = Array(item.make, item.model).join(' ');
+
+						$(`<div class="item" style="margin-top: 4px; margin-bottom: 4px;">${make_model} <a href="${item.absolute_url}" style="float: right;">View</a></div>`).appendTo(results)
+					}
+				})
+			})
+		})
+	</script>
+{% endblock %}
+
+{% block "content" %}
+	<h2>Item Search:</h2>
+
+	<form id="item-search" action="" method="POST">
+		{% csrf_token %}
+		<input type="text" name="q" placeholder="Search here" />
+	</form>
+
+	<div id="results">
+
+	</div>
+{% endblock %}

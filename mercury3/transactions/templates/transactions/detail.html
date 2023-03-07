@@ -3,16 +3,16 @@
 {% block "content" %}
 	<h2 class="text-center">Transaction Record</h2>
 
-	<p class="text-center">Date: {{ object.timestamp|date:"M d, Y" }}</p>
+	<p class="text-center">Date: {{ object.timestamp|date:"h:m A M d, Y" }}</p>
 
 	<h3>Items:</h3>
 
 	<div id="items" style="margin-left: 18px; margin-right: 18px;">
 		{% for titem in object.transactionitem_set.all %}
 			<div class="item">
-				<a href="/item/{{ titem.item.pk }}/">{{ titem.item }}</a> 
+				<a href="/items/{{ titem.item.pk }}/">#{{ titem.item.pk|stringformat:"07d" }}</a>&nbsp;&nbsp;&nbsp;{{ titem.item }}
 				<div style="float: right;">
-					{{ titem.price }}
+					${{ titem.price }}
 				</div>
 			</div>
 
@@ -21,9 +21,9 @@
 
 	<hr />
 	<div class="text-right">
-		Subtotal: {{ object.subtotal }}<br />
-		Tax: {{ object.tax }}<br />
-		Total: {{ object.total }}<br />
+		Subtotal: ${{ object.subtotal }}<br />
+		Tax: ${{ object.tax }}<br />
+		Total: ${{ object.total }}<br />
 	</div>
 	<hr />
 

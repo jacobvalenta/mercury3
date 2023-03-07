@@ -24,3 +24,6 @@ class Item(models.Model):
 
 	def __str__(self):
 		return "{0} {1}".format(self.make if self.make else '', self.model).strip()
+
+	def get_absolute_url(self):
+		return "/items/{0}/".format(self.pk)

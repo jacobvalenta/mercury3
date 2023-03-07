@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block "content" %}
+	<h2 class="text-center">Item Record</h2>
+
+	<p class="text-center">
+		{{ object.pk|stringformat:"07d" }}<br />
+		{{ object.status|upper }}
+	</p>
+
+	<div>
+		Make: {% if object.make %}{{ object.make }}{% endif %}<br />
+		Model: {{ object.model }}
+	</div>
+
+	<br />
+
+	<h3>Transactions:</h3>
+
+	<div id="transactions" style="margin-left: 18px; margin-right: 18px;">
+		{% for transaction in object.transaction_set.all %}
+			<div class="item">
+				<a href="/transactions/{{ transaction.pk }}/">{{ transaction.pk|stringformat:"07d" }}</a>&nbsp;&nbsp;&nbsp;{{ transaction.get_transaction_type_display }}
+				<div style="float: right;">
+					${{ transaction.total }}
+				</div>
+			</div>
+
+		{% endfor %}
+	</div>
+
+	<br />
+
+	<h3>Actions</h3>
+{% endblock %}

@@ -20,16 +20,14 @@ class TransactionCreateView(TemplateView):
 		return super().get(request)
 
 	def post(self, request):
-		print(request.POST)
 		self.form = TransactionForm(request.POST)
 		ItemFormSet = formset_factory(TransactionItemForm)
 		self.formset = ItemFormSet(request.POST)
 
 		if self.formset.is_valid() and self.form.is_valid():
-			item_data = []
-			for item_form in self.formset:
-				item_data.append({'item': item_form.cleaned_data['item'],
-								  'price': item_form.cleaned_data['price']})
+			item_data = [{'item': i.cleaned_data['item'],
+						  'price': i.cleaned_data['price']} \
+				for i in self.formset]
 
 			transaction = self.form.save(item_data=item_data)
 
@@ -51,7 +49,3 @@ class TransactionCreateView(TemplateView):
 class TransactionDetailView(DetailView):
 	template_name = "transactions/detail.html"
 	model = Transaction
-
-	def get(self, request, pk):
-		print(dir(self.get_object()))
-		return super().get(request, pk)

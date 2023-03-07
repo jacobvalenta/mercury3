@@ -5,6 +5,9 @@
 	<a href="{% url 'customer-create' %}">Add Customer</a><br />
 	<a href="{% url 'customer-search' %}">Customer Search</a>
 
+	<h2>Items</h2>
+	<a href="{% url 'items:search' %}">Item Search</a>
+
 	<h2>Transactions</h2>
 	<a href="{% url 'transactions:create-out-zero-info' %}">New Buy/Pawn</a> <br />
 	<a href="{% url 'transactions:create-out-zero-info' %}">New Sale/Layaway</a>
