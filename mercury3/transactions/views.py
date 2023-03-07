@@ -60,5 +60,5 @@ class TransactionCreateView(TemplateView):
 		})
 		return data
 
-class TransactionDetail(DetailView):
+class TransactionDetailView(DetailView):
 	template_name = "transactions/detail.html"
