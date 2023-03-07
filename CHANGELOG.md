@@ -2,8 +2,8 @@
 
 ## v3.0.2
 
-- Smoother transactions, brought to transaction detail on transaction success.
-- Remove an item from the list of an out transaction.
+- Smoother transactions, now brought to transaction detail on transaction success.
+- Remove an item from the list of on out transaction.
 - Add `Transaction.transaction_type` and `Item.status`.
 - Style changes (namely center content).
 
