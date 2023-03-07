@@ -21,8 +21,7 @@
 		{% for transaction in object.transaction_set.all %}
 			<div class="item">
 				<a href="/transactions/{{ transaction.pk }}/">
-					#{{ transaction.pk|stringformat:"07d" }}
-				</a>
+					#{{ transaction.pk|stringformat:"07d" }}</a>
 				&nbsp;&nbsp;&nbsp;
 				{{ transaction.get_transaction_type_display }}
 				<div style="float: right;">
