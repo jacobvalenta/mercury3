@@ -3,7 +3,10 @@
 {% block "content" %}
 	<h2 class="text-center">Transaction Record</h2>
 
-	<p class="text-center">Date: {{ object.timestamp|date:"h:m A M d, Y" }}</p>
+	<p class="text-center">
+		#{{ object.pk|stringformat:"07d" }}<br />
+		Date: {{ object.timestamp|date:"h:m A M d, Y" }}
+	</p>
 
 	<h3>Items:</h3>
 
