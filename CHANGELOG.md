@@ -1,5 +1,10 @@
 # Changelog
 
+## v3.0.3
+
+- Buy transactions work and adds items to inventory.
+- Item search & item detail pages.
+
 ## v3.0.2
 
 - Smoother transactions, now brought to transaction detail on transaction success.
