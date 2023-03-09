@@ -7,6 +7,7 @@ from mercury3.items.models import Item
 
 from .models import Transaction, TransactionItem
 
+
 class TransactionForm(forms.ModelForm):
 	# customer = forms.ModelChoiceField(queryset=Customer.objects.all())
 
@@ -15,11 +16,17 @@ class TransactionForm(forms.ModelForm):
 		fields = ["customer", "transaction_type"]
 
 	def save(self, item_data, commit=True, *args, **kwargs):
+		transaction = super().save(commit=False, *args, **kwargs)
+
 		subtotal = sum([item['price'] for item in item_data])
-		tax = subtotal * Decimal(0.06)
+
+		if transaction.transaction_type in [Transaction.SALE, Transaction.LAYAWAY]:
+			tax = subtotal * Decimal(0.06)
+		else:
+			tax = Decimal(0.00)
+
 		total = subtotal + tax
 
-		transaction = super().save(commit=False, *args, **kwargs)
 		transaction.subtotal = subtotal
 		transaction.tax = tax
 		transaction.total = total
