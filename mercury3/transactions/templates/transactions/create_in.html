@@ -31,15 +31,68 @@
 			})
 		}
 
-		var computeTotals = function(){
+		var addItem = function(e){
+			e.preventDefault();
+
+
+			var i = $("#items .item").length;
+
+			if (i == 0){
+				$("#items").empty();
+			}
+
+			$(`<div class="item">
+					<div class="summary">
+						<div style="float: right;">
+							<span class="price-display">$0.00</span>
+							<div class="expand" style="display: inline-block; width: 50px;">
+							</div>
+						</div>
+						<div 
+							<a href="#">Hide</a>
+							<strong>${i + 1}</strong>
+							<span class="make-model">&nbsp;</span>
+						</div>
+					</div>
+
+					<div class="info">
+						<p>Make: <input type="text" class="make" name="form-${i}-make" onkeyup="updateMakeModel(this)"/></p>
+						<p>Model: <input type="text" class="model" name="form-${i}-model" onkeyup="updateMakeModel(this)"/></p>
+						<p>Price: <input type="text" class="price-in" name="form-${i}-price_in" onkeyup="computeTotals(this)"/></p>
+					</div>
+				</div>`).appendTo($("#items"));
+			computeFormSetData();
+		}
+
+		var updateMakeModel = function(el){
+			item = $(el).parent().parent().parent();
+			make = item.find(".make").val();
+			model = item.find(".model").val();
+
+			makeModel = Array(make, model).filter((str) => str !== '').join(' ');
+
+			makeModelEl = item.find('.make-model');
+			makeModelEl.empty();
+			$(`<span>${makeModel}</span>`).appendTo(makeModelEl)
+		}
+
+		var computeTotals = function(el){
+			item = $(el).parent().parent().parent();
+			price = parseFloat($(el).val()).toFixed(2);
+			if (price == NaN){
+				price = 0.00;
+			}
+			item.find('.price-display').text(`\$${price}`);
+
 			var items = $("#items .item").length;
 			subtotal = 0.00;
 			for (var i = 0; i < items; i++) {
-				subtotal += parseFloat($($(".item input")[i]).val());
+				subtotal += parseFloat($($(".item .price-in")[i]).val());
 			}
 			$("#subtotal").text("$" + subtotal.toFixed(2));
 
-			tax = subtotal * 0.06;
+			// tax = subtotal * 0.06;
+			tax = 0.00;
 			$("#tax").text("$" + tax.toFixed(2));
 
 			$("#total").text("$" + (subtotal + tax).toFixed(2));
@@ -100,8 +153,8 @@
 {% endblock %}
 
 {% block "content" %}
-	<div id="new-transaction">
-		<h2 class="text-center">New Out Transaction</h2>
+	<div id="new-in-transaction">
+		<h2 class="text-center">New In Transaction</h2>
 
 		{% if form.errors %}
 			{{ form.errors }}
@@ -143,8 +196,7 @@
 					</div>
 
 					<div>
-						<input id="item-search" type="text" placeholder="Item Number..." />
-						<button id="submit-item-search">Go</button>
+						<button type="button" onclick="addItem(event);">Add Item</button>
 					</div>
 				</div>
 			</div>
@@ -152,8 +204,8 @@
 			<br />
 			<hr />
 			<div class="text-right">
-				<input type="radio" value="sale" name="transaction_type" checked> <label for="sale">Sale</label>
-				<input type="radio" value="layaway" name="transaction_type"> <label for="layaway">Layaway</label>
+				<input type="radio" value="buy" name="transaction_type"> <label for="sale">Buy</label>
+				<input type="radio" value="pawn" name="transaction_type" checked> <label for="layaway">Pawn</label>
 			</div>
 			<hr />
 			<br />

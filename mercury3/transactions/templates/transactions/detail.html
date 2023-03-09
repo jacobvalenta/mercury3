@@ -5,6 +5,7 @@
 
 	<p class="text-center">
 		#{{ object.pk|stringformat:"07d" }}<br />
+		{{ object.get_transaction_type_display|upper }}<br />
 		Date: {{ object.timestamp|date:"h:m A M d, Y" }}
 	</p>
 
