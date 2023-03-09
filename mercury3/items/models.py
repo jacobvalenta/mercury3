@@ -17,7 +17,7 @@ class Item(models.Model):
 	model = models.CharField(max_length=48, blank=True, null=True)
 
 	price_in = models.DecimalField(max_digits=9, decimal_places=2)
-	price = models.DecimalField(max_digits=9, decimal_places=2)
+	price = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True)
 	price_out = models.DecimalField(max_digits=9, decimal_places=2, blank=True, null=True)
 
 	status = models.CharField(max_length=11, choices=STATUS_CHOICES)
