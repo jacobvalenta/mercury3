@@ -6,8 +6,9 @@
   "env": {
     "DJANGO_SECRET_KEY": {
       "description": "A secret key for Django.",
-      "generator": "secret"
-    },
+      "generator": "secret",
+      "required": true
+    }
   },
   "formation": {
     "web": {
