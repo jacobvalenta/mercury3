@@ -1,0 +1,31 @@
+{
+  "name": "Mercury 3",
+  "description": "Open Source Pawn Shop Software",
+  "repository": "https://github.com/jacobvalenta/mercury3",
+  "keywords": ["python", "django"],
+  "env": {
+    "DJANGO_SECRET_KEY": {
+      "description": "A secret key for Django.",
+      "generator": "secret"
+    },
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:basic",
+      "options": {
+        "version": "15"
+      }
+    }
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+}
