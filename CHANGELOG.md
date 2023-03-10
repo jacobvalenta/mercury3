@@ -2,7 +2,7 @@
 
 ## v3.0.3
 
-- Buy transactions work and adds items to inventory.
+- Buy transactions work; adds items to inventory.
 - Item search & item detail pages.
 
 ## v3.0.2
