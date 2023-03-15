@@ -22,5 +22,6 @@ urlpatterns = [
     path('', include('mercury3.core.urls')),
     path('', include('mercury3.customers.urls')),
     path('items/', include(('mercury3.items.urls', 'items'), namespace="items")),
+    path('pawn-loans/', include(('mercury3.pawn_loans.urls', 'pawn-loans'), namespace="pawn-loans")),
     path('transactions/', include(('mercury3.transactions.urls', 'transactions'), namespace="transactions"))
 ]

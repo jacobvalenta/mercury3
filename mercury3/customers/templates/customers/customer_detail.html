@@ -1,12 +1,45 @@
 {% extends 'base.html' %}
 
+{% block "javascript" %}
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("#view-pawn-loans").on('click', function(e){
+				e.preventDefault();
+				$("#pawn-loans").slideToggle(122);
+
+				if ($("#view-pawn-loans").text() == "Expand"){
+					$("#view-pawn-loans").text("Collapse");
+				}else{
+					$("#view-pawn-loans").text("Expand");
+				}
+			});
+		});
+	</script>
+{% endblock %}
+
 {% block "content" %}
-	<h2>Customer Record:</h2>
+	<h2 class="text-center">Customer Record</h2>
 
 	Name: {{ object }}<br />
 	<div>
 		<div style="display: inline-block; vertical-align: top;">Address:</div> <div style="display: inline-block;">{{ object.display_address|safe }}</div>
 	</div>
+
+	<h3>
+		<div style="float: right;"><a id="view-pawn-loans" href="#">Expand</a></div>
+		Pawn Loans ({{ customer.pawnloan_set.active.count }})
+	</h3>
+
+	<div id="pawn-loans" style="display: none">
+		{% for pawn_loan in customer.pawnloan_set.all %}
+			<div>
+				<div style="float: right;"><a href="/pawn-loans/{{ pawn_loan.pk }}/">View</a> <a href="#">Pay</a> ${{ pawn_loan.principle_amount }}</div>
+				<span style="color: {% if pawn_loan.status == 'active' %}blue{% elif pawn_loan.status == 'redeemed' %}green{% else %}red{% endif %};">●</span> {{ pawn_loan.items_description }}
+			</div>
+		{% endfor %}
+	</div>
+
+	<hr />
 
 	<h3>Actions</h3>
 	<a href="#">New Transaction</a><br />

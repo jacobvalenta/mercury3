@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block "javascript" %}
+	<script type="text/javascript">
+		var selectCustomer = function(pk, name, address){
+			$("input[name=customer]").val(pk);
+			$("#customer-search").val('')
+			$("#selected-customer").empty();
+			$("#selected-customer").html(`<p>${name}<br />${address}</p>`);
+		}
+
+		var payPawn = function(){
+			var repayment = parseFloat($("#interest-due").attr('data-value'))
+			$("#amount").val(repayment.toFixed(2));
+			computeTotals();
+		}
+
+		var redeemPawn = function(){
+			var totalLoanAndRepayment = parseFloat($("#unpaid-principle").attr('data-value')) + parseFloat($("#interest-due").attr('data-value'));
+			$("#amount").val(totalLoanAndRepayment.toFixed(2));
+			computeTotals();
+		}
+
+
+		var computeTotals = function(){
+			var amountToPay = $("#amount").val();
+			var	subtotal = parseFloat(amountToPay);
+			$("#subtotal").text("$" + subtotal.toFixed(2));
+
+			tax = subtotal * 0.06;
+			$("#tax").text("$" + tax.toFixed(2));
+
+			$("#total").text("$" + (subtotal + tax).toFixed(2));
+		}
+
+		$(document).ready(function(){
+			$("#customer-search").on('keyup', function(){
+				$.ajax('/customers/search/', {method: "POST", data: {q: $("#customer-search").val(), csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()}})
+				.done(function(data){
+					results = $("#customer-autocomplete");
+					results.empty();
+					for (var i = 0; i < data.length; i++) {
+						result = data[i];
+						$("<div>" + result.full_name + '<a href="#" style="float: right;" onclick="selectCustomer(' + result.pk + ", '" + result.full_name + '\', \'' + result.address_1 + '\');">Select</a></div>').appendTo(results)
+					}
+					results.show();
+				})
+			});
+			$(document).on("click", function(e){
+				if ($(e).attr('id') != "customer-search"){
+					$("#customer-autocomplete").hide();
+				}
+			});
+
+			$("#amount").on('keyup', function(e){
+				computeTotals();
+			});
+
+			computeTotals();
+		});
+	</script>
+{% endblock %}
+
+{% block "content" %}
+	<div id="new-transaction">
+		<h2 class="text-center">Pay or Redeem Pawn</h2>
+
+		{% if form.errors %}
+			{{ form.errors }}
+		{% endif %}
+		{% if item_formset.errors %}
+			{{ item_formset.errors }}
+		{% endif %}
+
+		<form action="" method="POST">
+			{% csrf_token %}
+
+			<!-- Customer Selection -->
+			<div>
+				<h3>
+					Customer & Loan:
+				</h3>
+				<div style="margin-left: 18px;">
+					<div id="selected-customer" style="display: inline-block;">
+						<p>
+							{% if not customer %}
+								<i>No Customer</i>
+							{% else %}
+								#{{ customer.pk|stringformat:"07d" }} {{ customer.full_name }}<br />
+								{{ customer.address|safe }}
+							{% endif %}
+						</p>
+					</div><br />
+					<input type="hidden" name="customer" {% if customer %}value="{{ customer.pk }}"{% endif %}/>
+					{% if not customer %}
+						<input id="customer-search" type="text" placeholder="Customer search..." />
+						<div id="customer-autocomplete" style="display: none; border: 1px solid #444; border-top: none;">
+					{% endif %}
+					</div>
+				</div>
+			</div>
+
+			<!-- Loan Selection -->
+			<div>
+				<select name="pawn_loan">
+					{% if not pawn_loan %}
+						<option val="">Select customer first...</option>
+					{% else %}
+						{% for pawn_loan_list in customer.pawnloan_set.all %}
+							<option value="{{ pawn_loan_list.pk }}" {% if pawn_loan_list.pk == pawn_loan.pk %}selected{% endif %}>{{ pawn_loan.items_description }} ${{ pawn_loan.principle_amount }}</option>
+						{% endfor %}
+					{% endif %}
+				</select>
+			</div>
+
+			<br />
+
+			<h3>Payment Details</h3>
+
+			<p>
+				<div id="unpaid-principle" style="float: right;" data-value="{{ pawn_loan.unpaid_principle }}">${{ pawn_loan.unpaid_principle }}</div>
+				Unpaid principle:
+			</p>
+
+			<p>
+				<div id="interest-due" style="float: right;" data-value="{{ pawn_loan.amount_due }}">${{ pawn_loan.amount_due}}</div>
+				Intrest due:
+			</p>
+
+			<hr />
+
+			<p>
+				<div style="float: right;">$ <input id="amount" name="payment_amount" class="money" type="number" step="0.01" value="{{ pawn_loan.amount_due }}" style="width: 85px; text-align: right;"/></div>
+				Amount to pay: 
+			</p>
+
+			<hr />
+			<div class="text-right">
+				<input type="radio" value="pay" name="transaction_type" onclick="payPawn();" {% if transaction_type == "pay" %}checked{% endif %}> <label for="sale">Pay Pawn</label>
+				<input type="radio" value="redeem" name="transaction_type" onclick="redeemPawn();" {% if transaction_type == "redeem" %}checked{% endif %}> <label for="layaway">Redeem Pawn</label>
+			</div>
+			<hr />
+			<br />
+
+			<div id="totals" style="text-align: right;">
+				Subtotal: <span id="subtotal">$0.00</span><br />
+				Tax: <span id="tax">$0.00</span><br />
+				Total: <span id="total">$0.00</span><br />
+			</div>
+
+			<div class="text-center">
+				<button type="submit">Submit</button>
+			</div>
+		</form>
+	</div>
+{% endblock %}

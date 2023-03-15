@@ -27,6 +27,6 @@ class CustomerSearchView(TemplateView):
 			vector = SearchVector('first_name', weight='B') + SearchVector('middle_name', weight="D") + SearchVector('last_name', weight='A') + SearchVector('address_1', weight="C") + SearchVector('address_2', weight="C") + SearchVector('phone_number', weight="B")
 			customers = Customer.objects.annotate(rank=vector).filter(rank__icontains=query).order_by("-rank")
 			for customer in customers:
-				results.append({'pk': customer.pk, 'full_name': customer.get_full_name(), 'address_1': customer.address_1, 'absolute_url': customer.get_absolute_url()})
+				results.append({'pk': customer.pk, 'full_name': customer.full_name, 'address_1': customer.address_1, 'absolute_url': customer.get_absolute_url()})
 
 		return JsonResponse(results, safe=False)

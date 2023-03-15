@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block "javascript" %}
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("#view-pawn-loans").on('click', function(e){
+				e.preventDefault();
+				$("#pawn-loans").slideToggle(122);
+
+				if ($("#view-pawn-loans").text() == "Expand"){
+					$("#view-pawn-loans").text("Collapse");
+				}else{
+					$("#view-pawn-loans").text("Expand");
+				}
+			});
+		});
+	</script>
+{% endblock %}
+
+{% block "content" %}
+	<h2 class="text-center">Pawn Loan Details</h2>
+
+	<div style="display: inline-block; vertical-align: top">
+		Customer:
+	</div>
+	<div style="display: inline-block;">
+		<a href="/customers/{{ object.customer.pk }}/">#{{ object.customer.pk|stringformat:"07d" }}</a> {{ object.customer }}
+	</div>
+
+	<p>Principle Amount: ${{ object.principle_amount }}</p>
+
+	<p>
+		Due Date: {{ object.date_due }}<br />
+		Amount Due: ${{ object.amount_due }}
+	</p>
+
+	<h3>Items:</h3>
+
+	<div id="items">
+		<ol>
+			{% for item in object.items.all %}
+				<li>
+					<div style="display: inline-block; vertical-align: top;">
+						<a href="/items/{{ item.pk }}/">#{{ item.pk|stringformat:"07d" }}</a>
+					</div>
+					<div style="display: inline-block; width: 165px;">
+						{{ item }}
+					</div>
+					<div style="display: inline-block; vertical-align: top; width: 66px" class="text-right">
+						${{ item.price_in }}
+					</div>
+				</li>
+			{% endfor %}
+		</ol>
+	</div>
+
+	<hr />
+
+	<h3>Actions</h3>
+	<a href="{% url 'transactions:pay' %}?loan={{ object.pk }}">Pay</a><br />
+	<a href="#">Redeem</a><br />
+{% endblock %}

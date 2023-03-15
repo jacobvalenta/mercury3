@@ -5,13 +5,62 @@ from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.views.generic import DetailView, TemplateView
+from django.views.generic.edit import FormView
 
 from mercury3.items.forms import ItemForm
+from mercury3.items.models import Item
+from mercury3.pawn_loans.models import PawnLoan
 
-from .forms import TransactionForm, TransactionItemForm
+from .forms import TransactionForm, TransactionItemForm, PayOrRedeemPawnForm
 from .models import Transaction, TransactionItem
 
-class TransactionCreateView(TemplateView):
+
+class InTransactionCreateView(TemplateView):
+	template_name = "transactions/create_in.html"
+
+	def get(self, request):
+		self.form = TransactionForm()
+		ItemFormSet = formset_factory(ItemForm)
+		self.formset = ItemFormSet(request.POST)
+
+		return super().get(request)
+
+	def post(self, request):
+		self.form = TransactionForm(request.POST)
+		ItemFormSet = formset_factory(ItemForm)
+		self.formset = ItemFormSet(request.POST)
+
+		if self.formset.is_valid() and self.form.is_valid():
+			item_data = []
+
+			for item_form in self.formset:
+				item = item_form.save(commit=False)
+				if self.form.cleaned_data['transaction_type'] == "buy":
+					item.status = Item.HOLD
+				elif self.form.cleaned_data['transaction_type'] == "pawn":
+					item.status = Item.PAWN
+				item.save()
+				item_data.append({'item': item, 'price': item.price_in})
+
+			transaction = self.form.save(item_data=item_data)
+
+			return HttpResponseRedirect(reverse('transactions:detail',
+						   kwargs={'pk': transaction.pk}))
+
+		else:
+			return TemplateResponse(request, 'transactions/create_in.html',
+									self.get_context_data())
+
+	def get_context_data(self, *args, **kwargs):
+		data = super().get_context_data(*args, **kwargs)
+		data.update({
+			'form': self.form,
+			'item_formset': self.formset
+		})
+		return data
+
+
+class OutTransactionCreateView(TemplateView):
 	template_name = "transactions/create.html"
 
 	def get(self, request):
@@ -57,47 +106,35 @@ class TransactionCreateView(TemplateView):
 		})
 		return data
 
-class InTransactionCreateView(TemplateView):
-	template_name = "transactions/create_in.html"
 
-	def get(self, request):
-		self.form = TransactionForm()
-		ItemFormSet = formset_factory(ItemForm)
-		self.formset = ItemFormSet(request.POST)
+class PayOrRedeemPawnView(FormView):
+	form_class = PayOrRedeemPawnForm
+	template_name = 'transactions/pay_or_redeem.html'
 
-		return super().get(request)
+	def get_success_url(self):
+		return reverse('transactions:detail',
+					   kwargs={'pk': self.transaction.pk})
 
-	def post(self, request):
-		self.form = TransactionForm(request.POST)
-		ItemFormSet = formset_factory(ItemForm)
-		self.formset = ItemFormSet(request.POST)
-
-		if self.formset.is_valid() and self.form.is_valid():
-			item_data = []
-
-			for item_form in self.formset:
-				item = item_form.save(commit=False)
-				item.status = Item.HOLD
-				item.save()
-				item_data.append({'item': item, 'price': item.price_in})
-
-			transaction = self.form.save(item_data=item_data)
-
-			return HttpResponseRedirect(reverse('transactions:detail',
-						   kwargs={'pk': transaction.pk}))
-
-		else:
-			return TemplateResponse(request, 'transactions/create_in.html',
-									self.get_context_data())
+	def form_valid(self, form):
+		self.transaction = form.save()
+		return super().form_valid(form)
 
 	def get_context_data(self, *args, **kwargs):
 		data = super().get_context_data(*args, **kwargs)
 		data.update({
-			'form': self.form,
-			'item_formset': self.formset
+			'transaction_type': self.kwargs['type']
 		})
-		return data
 
+		if self.request.GET.get('loan'):
+			loan_pk = self.request.GET.get('loan')
+			pawn_loan = PawnLoan.objects.get(pk=loan_pk)
+
+			data.update({
+				'customer': pawn_loan.customer,
+				'pawn_loan': pawn_loan
+			})
+
+		return data
 
 class TransactionDetailView(DetailView):
 	template_name = "transactions/detail.html"

@@ -9,6 +9,18 @@
 		Date: {{ object.timestamp|date:"h:m A M d, Y" }}
 	</p>
 
+
+	<h3>Customer</h3>
+
+	<div style="display: inline-block; vertical-align: top;">
+		<a href="/customers/{{ object.customer.pk }}/">#{{ object.customer.pk|stringformat:"07d" }}</a>
+	</div>
+	<div style="display: inline-block">
+		{{ object.customer.full_name }}</a>
+		<br />
+		{{ object.customer.display_address|safe }}
+	</div>
+
 	<h3>Items:</h3>
 
 	<div id="items" style="margin-left: 18px; margin-right: 18px;">
