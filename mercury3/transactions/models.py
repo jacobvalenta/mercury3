@@ -1,7 +1,7 @@
 from datetime import timedelta
 from decimal import Decimal
 
-from django import apps
+from django.apps import apps
 from django.db import models
 from django.utils import timezone
 
@@ -64,10 +64,11 @@ class Transaction(models.Model):
 
 			pawn_loan.save()
 
-			for item in pawn_loan.items.all():
-				item.status = Item.REDEEMED
-				item.amount_out = item.amount_in
-				item.save()
+			if self.transaction_type == self.REDEEM:
+				for item in pawn_loan.items.all():
+					item.status = Item.REDEEMED
+					item.price_out = item.price_in
+					item.save()
 
 		elif create_pawnloan:
 			amount_due = amount_due=self.total * Decimal(0.20)
