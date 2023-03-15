@@ -50,3 +50,4 @@ STATE_CHOICES = (
 	('WI', "Wisconsin"),
 	('WY', "Wyoming")
 )
+"""A list of the 50 state choices."""
