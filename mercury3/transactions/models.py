@@ -72,6 +72,8 @@ class Transaction(models.Model):
 					item.price_out = item.price_in
 					item.save()
 
+			pawn_loan.transactions.add(self)
+
 			pawn_loan.save()
 
 		elif create_pawnloan:

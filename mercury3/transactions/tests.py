@@ -89,5 +89,58 @@ class TransactionTestCase(TestCase):
 			self.assertEqual(item.status, Item.PAWN)
 
 		# Pawn loan has correct principle amount.
-		pawn_loan = PawnLoan.objects.get(pk=1)
+		pawn_loan = transaction.pawnloan_set.first()
 		self.assertEqual(pawn_loan.principle_amount, Decimal(1.00))
+
+	def test_redeem_transaction(self):
+		pawn_post_data = {
+			'customer': 1, 
+			'form-0-make': "Apple",
+			'form-0-model': "iPhone",
+			'form-0-price_in': "1.00",
+			'form-INITIAL_FORMS': 0,
+			'form-TOTAL_FORMS': 1,
+			'transaction_type': 'pawn'
+		}
+
+		# Response is a redirect
+		pawn_url = reverse('transactions:create-in')
+		pawn_response = self.client.post(pawn_url, pawn_post_data)
+		self.assertEqual(pawn_response.status_code, 302)
+
+		pk = get_pk_from_url(pawn_response.headers['Location'])
+		transaction = Transaction.objects.get(pk=pk)
+
+		pawn_loan = transaction.pawnloan_set.first()
+
+		redeem_post_data = {
+			'customer': 1, 
+			'pawn_loan': pawn_loan.pk,
+			'payment_amount': pawn_loan.redeem_amount,
+			'transaction_type': 'redeem'
+		}
+		redeem_url = reverse('transactions:pay')
+		redeem_url += "?loan={0}".format(pawn_loan.pk)
+		redeem_response = self.client.post(redeem_url, redeem_post_data)
+
+		self.assertEqual(redeem_response.status_code, 302)
+
+		pk = get_pk_from_url(redeem_response.headers['Location'])
+
+		transaction = Transaction.objects.get(pk=pk)
+
+		# `transaction_type` equals "buy"
+		self.assertEqual(transaction.transaction_type, transaction.REDEEM)
+
+		# Creation time less than 2 seconds ago.
+		ago = (timezone.now() - transaction.timestamp).microseconds
+		self.assertLess(ago, TWO_SECONDS)
+
+		# Items marked as pawn.
+		for item in transaction.items.all():
+			self.assertEqual(item.status, Item.REDEEMED)
+
+		# Pawn loan has correct principle amount.
+		pawn_loan = transaction.pawnloan_set.first()
+		self.assertEqual(pawn_loan.unpaid_principle, Decimal(0.00))
+		self.assertEqual(pawn_loan.status, PawnLoan.REDEEMED)
