@@ -23,6 +23,7 @@ class Transaction(models.Model):
 		(PAYMENT, "Payment"),
 		(REDEEM, "Redeem")
 	)
+	"""The options for `transaction_type`"""
 
 	transaction_type = models.CharField(max_length=7, choices=TRANSACTION_TYPE_CHOICES)
 
@@ -36,6 +37,7 @@ class Transaction(models.Model):
 	timestamp = models.DateTimeField(auto_now_add=True)
 
 	def get_absolute_url(self):
+		"""A direct URL for the Transaction (for a given pk)."""
 		return "/transactions/{0}/".format(self.pk)
 
 	def save(self, pawn_loan=None, *args, **kwargs):
