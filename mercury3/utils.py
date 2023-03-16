@@ -63,3 +63,10 @@ def get_pk_from_url(url):
 		return None
 	except ValueError:
 		return None
+
+def is_number(check_value):
+	try:
+		int(check_value)
+		return True
+	except ValueError:
+		return False
