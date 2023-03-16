@@ -19,7 +19,9 @@ class Transaction(models.Model):
 		(BUY, "Buy"),
 		(PAWN, "Pawn"),
 		(SALE, "Sale"),
-		(LAYAWAY, "Layaway")
+		(LAYAWAY, "Layaway"),
+		(PAYMENT, "Payment"),
+		(REDEEM, "Redeem")
 	)
 
 	transaction_type = models.CharField(max_length=7, choices=TRANSACTION_TYPE_CHOICES)
@@ -51,28 +53,28 @@ class Transaction(models.Model):
 				t_item.save()
 				# transaction.add(item)
 
-			pawn_loan.status = PawnLoan.REDEEMED
-
-			interest_due = pawn_loan.amount_due
-
-			if interest_due < self.subtotal:
-				working_carry = self.subtotal - interest_due
+			if pawn_loan.amount_due < self.subtotal:
+				working_carry = self.subtotal - pawn_loan.amount_due
 				pawn_loan.amount_due = Decimal(0.00)
 				pawn_loan.unpaid_principle -= working_carry
 			else:
 				pawn_loan.interest_due -= self.subtotal
 
-			pawn_loan.save()
 
 			if self.transaction_type == self.REDEEM:
+				pawn_loan.status = PawnLoan.REDEEMED
+				
 				for item in pawn_loan.items.all():
 					item.status = Item.REDEEMED
 					item.price_out = item.price_in
 					item.save()
 
+			pawn_loan.save()
+
 		elif create_pawnloan:
 			amount_due = amount_due=self.total * Decimal(0.20)
 			date_due = timezone.now().date() + timedelta(days=30)
+
 			pawn_loan = PawnLoan(customer=self.customer,
 								 status=PawnLoan.ACTIVE,
 								 principle_amount=self.total,
@@ -83,6 +85,7 @@ class Transaction(models.Model):
 
 			for item in self.items.all():
 				pawn_loan.items.add(item)
+
 			pawn_loan.transactions.add(self)
 
 
