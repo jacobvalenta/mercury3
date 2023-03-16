@@ -58,5 +58,5 @@
 
 	<h3>Actions</h3>
 	<a href="{% url 'transactions:pay' %}?loan={{ object.pk }}">Pay</a><br />
-	<a href="#">Redeem</a><br />
+	<a href="{% url 'transactions:redeem' %}?loan={{ object.pk }}">Redeem</a><br />
 {% endblock %}

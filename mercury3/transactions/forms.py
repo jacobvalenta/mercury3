@@ -60,8 +60,8 @@ class TransactionItemForm(forms.Form):
 
 class PayOrRedeemPawnForm(forms.Form):
 	PAY_OR_REDEEM_CHOICES = (
-		("pay", "Pay"),
-		("redeem", "Redeem")
+		(Transaction.PAYMENT, "Pay"),
+		(Transaction.REDEEM, "Redeem")
 	)
 
 	customer = forms.ModelChoiceField(queryset=Customer.objects.all())

@@ -130,13 +130,13 @@
 			<hr />
 
 			<p>
-				<div style="float: right;">$ <input id="amount" name="payment_amount" class="money" type="number" step="0.01" value="{{ pawn_loan.amount_due }}" style="width: 85px; text-align: right;"/></div>
+				<div style="float: right;">$ <input id="amount" name="payment_amount" class="money" type="number" step="0.01" value="{% if transaction_type == "pay" %}{{ pawn_loan.amount_due }}{% else %}{{ pawn_loan.redeem_amount }}{% endif %}" style="width: 85px; text-align: right;"/></div>
 				Amount to pay: 
 			</p>
 
 			<hr />
 			<div class="text-right">
-				<input type="radio" value="pay" name="transaction_type" onclick="payPawn();" {% if transaction_type == "pay" %}checked{% endif %}> <label for="sale">Pay Pawn</label>
+				<input type="radio" value="payment" name="transaction_type" onclick="payPawn();" {% if transaction_type == "pay" %}checked{% endif %}> <label for="sale">Pay Pawn</label>
 				<input type="radio" value="redeem" name="transaction_type" onclick="redeemPawn();" {% if transaction_type == "redeem" %}checked{% endif %}> <label for="layaway">Redeem Pawn</label>
 			</div>
 			<hr />

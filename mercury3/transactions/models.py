@@ -61,7 +61,7 @@ class Transaction(models.Model):
 				pawn_loan.amount_due = Decimal(0.00)
 				pawn_loan.unpaid_principle -= working_carry
 			else:
-				pawn_loan.interest_due -= self.subtotal
+				pawn_loan.amount_due -= self.subtotal
 
 
 			if self.transaction_type == self.REDEEM:
