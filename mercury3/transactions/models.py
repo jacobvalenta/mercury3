@@ -37,7 +37,7 @@ class Transaction(models.Model):
 	timestamp = models.DateTimeField(auto_now_add=True)
 
 	def get_absolute_url(self):
-		"""A direct URL for the Transaction (for a given pk)."""
+		"""A direct URL for the Transaction."""
 		return "/transactions/{0}/".format(self.pk)
 
 	def save(self, pawn_loan=None, *args, **kwargs):
