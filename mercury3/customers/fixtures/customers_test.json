@@ -1,0 +1,47 @@
+[
+{
+    "model": "customers.customer",
+    "pk": 1,
+    "fields": {
+        "first_name": "Joe",
+        "middle_name": null,
+        "last_name": "Buck",
+        "address_1": "123 Lemon Dr.",
+        "address_2": null,
+        "city": "Tinpoint",
+        "state": "ky",
+        "zip_code": "12345",
+        "phone_number": "1015551234"
+    }
+},
+{
+    "model": "customers.customer",
+    "pk": 2,
+    "fields": {
+        "first_name": "Till",
+        "middle_name": null,
+        "last_name": "Daburro",
+        "address_1": "481 Chesterminister Dr.",
+        "address_2": null,
+        "city": "Tigerscity",
+        "state": "ky",
+        "zip_code": "56789",
+        "phone_number": "5055553939"
+    }
+},
+{
+    "model": "customers.customer",
+    "pk": 3,
+    "fields": {
+        "first_name": "Todd",
+        "middle_name": null,
+        "last_name": "Cammle",
+        "address_1": "874 Lake Dr.",
+        "address_2": null,
+        "city": "Caboose",
+        "state": "CT",
+        "zip_code": "57345",
+        "phone_number": "8485552425"
+    }
+}
+]
