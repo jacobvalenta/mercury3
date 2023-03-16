@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.0.4
+
+- Payment and Redeem transactions work.
+- Installed pdoc for documentation.
+- Added 3 tests.
+
 ## v3.0.3
 
 - Buy transactions work; adds items to inventory.
