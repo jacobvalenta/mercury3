@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('items', '0007_alter_item_status'),
+        ('items', '0001_squashed_0008_alter_item_status'),
         ('layaway_plans', '0003_layawayplan_status'),
     ]
 

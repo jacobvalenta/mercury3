@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('items', '0003_item_status'),
+        ('items', '0001_squashed_0008_alter_item_status'),
         ('customers', '0004_alter_customer_state'),
     ]
 
