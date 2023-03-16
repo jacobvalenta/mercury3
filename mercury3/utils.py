@@ -51,3 +51,15 @@ STATE_CHOICES = (
 	('WY', "Wyoming")
 )
 """A list of the 50 state choices."""
+
+TWO_SECONDS = 2000000
+"""2 Seconds expressed in microseconds."""
+
+def get_pk_from_url(url):
+	"""Get a PK from simple url."""
+	try:
+		return int(url.split('/')[2])
+	except IndexError:
+		return None
+	except ValueError:
+		return None
