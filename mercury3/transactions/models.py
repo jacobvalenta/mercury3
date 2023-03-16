@@ -51,7 +51,7 @@ class Transaction(models.Model):
 
 		if self.transaction_type in [self.PAYMENT, self.REDEEM]:
 			for item in pawn_loan.items.all():
-				t_item = TransactionItem(item=item, transaction=self, price="1.00")
+				t_item = TransactionItem(item=item, transaction=self, price=item.price_in)
 				t_item.save()
 				# transaction.add(item)
 
