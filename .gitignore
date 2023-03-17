@@ -153,3 +153,5 @@ dmypy.json
 cython_debug/
 
 .DS_Store
+mercury3.sublime-project
+mercury3.sublime-workspace
