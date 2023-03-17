@@ -1,8 +1,13 @@
 from django.contrib.postgres.search import SearchVector
-from django.http import HttpResponseBadRequest, Http404, JsonResponse
+from django.http import (HttpResponseBadRequest, HttpResponseRedirect,
+						 Http404, JsonResponse)
+from django.urls import reverse
+from django.utils import timezone
+from django.views.decorators.http import require_http_methods
 from django.views.generic import TemplateView, DetailView
 
-from .models import Item
+from .forms import ItemScanForm
+from .models import Item, InventoryAudit
 
 class ItemSearchView(TemplateView):
 	template_name = "items/search.html"
@@ -25,6 +30,146 @@ class ItemSearchView(TemplateView):
 class ItemDetailView(DetailView):
 	template_name = "items/detail.html"
 	model = Item
+
+class InventoryAuditView(TemplateView):
+
+	def get_last_audit(self):
+		last_audit = InventoryAudit.objects.filter( \
+			time_end__isnull=False).order_by('-time_end').first()
+
+		return last_audit
+
+	def get_audit(self):
+		try:
+			return self.current_audit
+		except AttributeError:
+			try:
+				self.current_audit = InventoryAudit.objects.get(time_end=None)
+			except InventoryAudit.DoesNotExist:
+				self.current_audit = None
+			return self.current_audit
+
+	def get_template_names(self, *args, **kwargs):
+		audit = self.get_audit()
+		
+		if audit:
+			return "items/inventory_audit_in_progress.html"
+		else:
+			return "items/inventory_audit.html"
+
+	def post(self, *args, **kwargs):
+		if self.get_audit():
+			return HttpResponseBadRequest("Audit already in progress.")
+
+		audit = InventoryAudit()
+		audit.save()
+
+		return HttpResponseRedirect(reverse('items:inventory-audit'))
+
+	def get_context_data(self, *args, **kwargs):
+		data = super().get_context_data(*args, **kwargs)
+
+		audit = self.get_audit()
+		last_audit = self.get_last_audit()
+
+		print("Last audit:", last_audit)
+
+		if last_audit:
+			last_audit_ago = (timezone.now() - last_audit.time_end).days
+		else:
+			last_audit_ago = None
+
+		data.update({
+			'audit': audit,
+			'last_audit': last_audit,
+			'last_audit_ago': last_audit_ago
+		})
+
+		return data
+
+
+class InventoryAuditDetailView(DetailView):
+	model = InventoryAudit
+	template_name = "items/inventory_audit_detail.html"
+
+	def get_last_audit(self):
+		last_audit = InventoryAudit.objects.filter( \
+			time_end__isnull=False).order_by('-time_end').first()
+
+
+		return last_audit
+
+	def get_context_data(self, *args, **kwargs):
+		data = super().get_context_data(*args, **kwargs)
+		last_audit = self.get_last_audit()
+
+		data.update({
+			'most_recent_audit': self.get_object() == last_audit
+		})
+
+		return data
+
+@require_http_methods(["POST"])
+def audit_scan_item_view(request):
+	try:
+		audit = InventoryAudit.objects.get(time_end=None)
+	except InventoryAudit.DoesNotExist:
+		HttpResponseBadRequest('No inventory in progress.')
+
+	form = ItemScanForm(request.POST, audit=audit)
+	if form.is_valid():
+		item = form.cleaned_data['item']
+		audit.items_left.remove(item)
+		return JsonResponse({'success': True})
+	else:
+		return JsonResponse({'error': True})
+
+@require_http_methods(["POST"])
+def audit_finish(request):
+	try:
+		audit = InventoryAudit.objects.get(time_end=None)
+	except InventoryAudit.DoesNotExist:
+		return HttpResponseBadRequest('No inventory in progress.')
+
+	audit.time_end = timezone.now()
+	audit.save()
+
+	return HttpResponseRedirect(reverse('items:inventory-audit-detail',
+								kwargs={'pk': audit.pk}))
+
+@require_http_methods(["POST"])
+def audit_reopen_view(request, pk):
+	try:
+		audit = InventoryAudit.objects.get(pk=pk)
+	except InventoryAudit.DoesNotExist:
+		raise Http404
+
+	try:
+		last_audit = InventoryAudit.objects.filter( \
+			time_end__isnull=False).order_by('-time_end').first()
+	except InventoryAudit.DoesNotExist:
+		return HttpResponseBadRequest('No inventories exist')
+
+	if last_audit == audit:
+		audit.time_end = None
+		audit.save()
+	else:
+		return HttpResponseBadRequest("Trying to reopen an old audit")
+
+	return HttpResponseRedirect(reverse('items:inventory-audit'))
+
+@require_http_methods(["POST"])
+def audit_make_missing_items_view(request, pk):
+	try:
+		audit = InventoryAudit.objects.get(pk=pk)
+	except InventoryAudit.DoesNotExist:
+		raise Http404
+
+	for item in audit.items_left.all():
+		item.status = Item.MISSING
+		item.save()
+
+	return HttpResponseRedirect(reverse('items:inventory-audit'))
 
 def search_item_number_ajax_view(request):
 	query = request.POST.get('q', None)

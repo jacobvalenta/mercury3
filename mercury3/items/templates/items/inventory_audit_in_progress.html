@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block "javascript" %}
+	<script type="text/javascript">
+		$(document).ready(function(){
+			console.log($("#scan-item-form"));
+			$("#scan-item-form").on('submit', function(e){
+				var itemNumber = parseInt($("#item-number").val());
+				$.ajax({
+					url: "{% url 'items:inventory-audit-scan' %}",
+					method: "POST",
+					data: {
+						"csrfmiddlewaretoken": $("input[name=csrfmiddlewaretoken]").val(),
+						"item": itemNumber
+					}
+				}).done(function(data){
+					if (data.success){
+						$(`li[data-number=${itemNumber}]`).remove();
+					}
+					$("#count").text(($("li").length).toString());
+					$("#item-number").val("");
+				});
+
+				return false;
+			});
+
+			$("#toggle-items").on('click', function(e){
+				e.preventDefault();
+				var text = $("#toggle-items").text();
+				if (text == "Show items"){
+					$("ul").show();
+					$("#toggle-items").text("Hide items");
+				}else if (text == "Hide items"){
+					$("ul").hide();
+					$("#toggle-items").text("Show items");
+				}
+
+			})
+		});
+	</script>
+{% endblock %}
+
+{% block "content" %}
+	<h2>Inventory Audit</h2>
+
+	<h3>Items left: <span id="count">{{ audit.items_left.count }}</span></h3>
+
+	<p><a id="toggle-items" href="#">Show items</a></p>
+
+	<ul style="display: none">
+		{% for item in audit.items_left.all %}
+			<li data-number="{{ item.pk }}">{{ item.pk|stringformat:"07d" }} - {{ item }}</li>
+		{% endfor %}
+	</ul>
+
+	<form id="scan-item-form" action="{% url 'items:inventory-audit-scan' %}" method="POST">
+		{% csrf_token %}
+		<input id="item-number" type="text" name="item_number" placeholder="Enter item number..." />
+		<button type="submit">Submit</button>
+	</form>
+
+	<form id="finish-audit-form" action="{% url 'items:inventory-audit-done' %}" method="POST">
+		{% csrf_token %}
+		<button type="submit">Finish audit</button>
+	</form>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load timedelta %}
+
+{% block "javascript" %}
+{% endblock %}
+
+{% block "content" %}
+	<h2>Inventory Audit Details</h2>
+
+	<p>Date: {{ object.time_start }}</p>
+	<p>Duration: {{ object.duration|timedelta }}</p>
+	<p>Total items: {{ object.items.count }}</p>
+	<p>Scanned items: {{ object.scanned_items_count }}</p>
+
+
+	{% if most_recent_audit %}
+		<form id="reopen-audit-form" action="reopen/" method="POST">
+			{% csrf_token %}
+			<button type="submit">Reopen audit</button>
+		</form>
+
+		<form id="make-missing-form" action="{% url 'items:inventory-audit-make-missing-items' object.pk %}" method="POST">
+			{% csrf_token %}
+			<button type="submit">Mark items missing</button>
+		</form>
+	{% endif %}
+{% endblock %}

@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 
 class Item(models.Model):
 	PAWN = "pawn"
@@ -7,6 +8,7 @@ class Item(models.Model):
 	SOLD = "sold"
 	HOLD = "hold"
 	POLICE_HOLD = "police_hold"
+	MISSING = "missing"
 
 	STATUS_CHOICES = (
 		(PAWN, "Pawn"),
@@ -14,7 +16,8 @@ class Item(models.Model):
 		(SALEABLE, "Saleable"),
 		(SOLD, "Sold"),
 		(HOLD, "Hold"),
-		(POLICE_HOLD, "Police Hold")
+		(POLICE_HOLD, "Police Hold"),
+		(MISSING, "Missing")
 	)
 
 	make = models.CharField(max_length=48, blank=True, null=True)
@@ -35,3 +38,35 @@ class Item(models.Model):
 
 	def get_absolute_url(self):
 		return "/items/{0}/".format(self.pk)
+
+
+class InventoryAudit(models.Model):
+	time_start = models.DateTimeField(auto_now_add=True)
+	time_end = models.DateTimeField(blank=True, null=True)
+
+	items = models.ManyToManyField('Item', related_name="all_inventory",
+								   blank=True, null=True)
+	items_left = models.ManyToManyField('Item', related_name="inventory_left",
+										blank=True, null=True)
+
+	def save(self, *args, **kwargs):
+		add_items = False
+		if not self.pk:
+			add_items = True
+
+		super().save(*args, **kwargs)
+
+		if add_items:
+			items = Item.objects.all().exclude(Q(status=Item.REDEEMED) | \
+											   Q(status=Item.SOLD))
+			self.items.add(*items)
+			self.items_left.add(*items)
+
+	@property
+	def duration(self):
+		return self.time_end - self.time_start
+
+	@property
+	def scanned_items_count(self):
+		return self.items.count() - self.items_left.count()
+	

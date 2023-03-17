@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block "javascript" %}
+{% endblock %}
+
+{% block "content" %}
+	<h2>Inventory Audit</h2>
+
+	<form action="" method="POST">
+		{% csrf_token %}
+		<button type="submit">Start inventory audit</button>
+	</form>
+
+	<i>Last Audit:
+		{% if last_audit %}
+			<a href="{% url 'items:inventory-audit-detail' last_audit.pk %}">{{ last_audit_ago }} {{ last_audit_ago|pluralize:"day,days" }} ago.</a>
+		{% else %}
+			No audit.
+		{% endif %}
+{% endblock %}
