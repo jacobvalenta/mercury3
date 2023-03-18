@@ -1,11 +1,11 @@
-import hashlib
-import uuid
+import re
 
 from django import forms
 from django.contrib.auth.models import User
 from django.forms.widgets import PasswordInput
 
 from mercury3.stores.models import Store
+from mercury3.utils import get_trailing_number
 
 from .models import Employee
 
@@ -13,8 +13,8 @@ class UserForm(forms.Form):
 	first_name = forms.CharField(max_length=24)
 	last_name = forms.CharField(max_length=24)
 
-	password1 = forms.CharField(widget=PasswordInput)
-	password2 = forms.CharField(widget=PasswordInput)
+	password1 = forms.CharField(widget=PasswordInput, label="Password")
+	password2 = forms.CharField(widget=PasswordInput, label="Repeat Password")
 
 	def is_valid(self, *args, **kwargs):
 		valid = super().is_valid(*args, **kwargs)
@@ -24,13 +24,32 @@ class UserForm(forms.Form):
 
 		return valid
 
-
 	def generate_username(self):
-		username = hashlib.sha1( \
-			"{0}_{1}_{2}".format(self.cleaned_data['first_name'],
-								 self.cleaned_data['last_name'],
-								 uuid.uuid4().hex) \
-						 .encode('UTF-8')).hexdigest()[0:13]
+		username_base = "{0}{1}".format(self.cleaned_data['first_name'][0],
+										self.cleaned_data['last_name'])
+		username_base = username_base.lower()
+
+		similar_usernames = User.objects.filter( \
+			username__startswith=username_base)
+
+		number = 0
+		highest_increment = 0
+
+		for user in similar_usernames:
+			number = get_trailing_number(user.username)
+
+			if not number:
+				number = 0
+
+			if number > highest_increment:
+				highest_increment = number
+
+		if number > 0:
+			suffix = number
+		else:
+			suffix = ""
+
+		username = "{}{}".format(username_base, suffix)
 
 		return username
 

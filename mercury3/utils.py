@@ -1,3 +1,5 @@
+import re
+
 STATE_CHOICES = (
 	('AL', "Alabama"),
 	('AK', "Alaska"),
@@ -70,3 +72,12 @@ def is_number(check_value):
 		return True
 	except ValueError:
 		return False
+
+def get_trailing_number(s):
+	"""Returns the number from the end of string.
+
+	Thank you to efotinis from
+	[StackOverflow](https://stackoverflow.com/questions/7085512/)
+	"""
+	m = re.search(r'\d+$', s)
+	return int(m.group()) if m else None
