@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     'mercury3.core',
     'mercury3.customers',
+    'mercury3.employees',
     'mercury3.items',
     'mercury3.layaway_plans',
     'mercury3.pawn_loans',
@@ -121,3 +122,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = "/"
+LOGOUT_REDIRECT_URL = "/login/"
