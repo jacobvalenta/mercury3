@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.0.5
+
+- Inventory audits.
+- Better customer search.
+- More tests.
+
 ## v3.0.4 (3/15/23)
 
 - Payment and Redeem transactions work.

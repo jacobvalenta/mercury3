@@ -45,9 +45,9 @@ class InventoryAudit(models.Model):
 	time_end = models.DateTimeField(blank=True, null=True)
 
 	items = models.ManyToManyField('Item', related_name="all_inventory",
-								   blank=True, null=True)
+								   blank=True)
 	items_left = models.ManyToManyField('Item', related_name="inventory_left",
-										blank=True, null=True)
+										blank=True)
 
 	def save(self, *args, **kwargs):
 		add_items = False
