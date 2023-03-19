@@ -1,0 +1,18 @@
+h1, h2, h3{
+	margin-top: 6px;
+	margin-bottom: 6px;
+}
+
+h1 a {
+	text-decoration: none;
+	color: black;
+}
+
+a{
+	color: blue;
+}
+
+/* Vertical align bullet points in lists */
+li > * {
+	vertical-align: top;
+}

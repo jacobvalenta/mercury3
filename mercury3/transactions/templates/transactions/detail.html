@@ -31,9 +31,13 @@
 					${{ titem.price }}
 				</div>
 			</div>
-
 		{% endfor %}
+		<br />
 	</div>
+
+	<h3>Employee</h3>
+
+	<p>#{{ object.employee.pk|stringformat:"07d" }}: {{ object.employee }}</p>
 
 	<hr />
 	<div class="text-right">

@@ -1,0 +1,33 @@
+.icon{
+/*	position: relative;
+	top: 3px;*/
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+	background-color: black;
+}
+.icon-small{
+	width: 14px;
+	height: 14px;
+}
+.icon-x2{
+	width: 34px;
+	height:  34px;
+}
+.icon-x3{
+	width: 51px;
+	height:  51px;
+}
+.icon-white{
+	background-color: #fff;
+}
+
+.icon.icon-item{
+	-webkit-mask-box-image: url('/static/img/item.png');
+}
+.icon.icon-people{
+	-webkit-mask-box-image: url('/static/img/people.png');
+}
+.icon.icon-transaction{
+	-webkit-mask-box-image: url('/static/img/transaction.png');
+}
