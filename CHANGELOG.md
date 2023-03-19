@@ -2,7 +2,9 @@
 
 ## v3.0.5
 
-- Inventory audits.
+- Add Stores and Locations.
+- Adds Employees.
+- Inventory Audits.
 - Better customer search.
 - More tests.
 
