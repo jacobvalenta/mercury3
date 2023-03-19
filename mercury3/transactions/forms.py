@@ -16,8 +16,10 @@ class TransactionForm(forms.ModelForm):
 		model = Transaction
 		fields = ["customer", "transaction_type"]
 
-	def save(self, item_data, commit=True, *args, **kwargs):
+	def save(self, item_data, user, commit=True, *args, **kwargs):
 		transaction = super().save(commit=False, *args, **kwargs)
+
+		transaction.employee = user.employee
 
 		subtotal = sum([item['price'] for item in item_data])
 
@@ -71,7 +73,7 @@ class PayOrRedeemPawnForm(forms.Form):
 
 	payment_amount = forms.DecimalField(max_digits=9, decimal_places=2)
 
-	def save(self, *args, **kwargs):
+	def save(self, user, *args, **kwargs):
 		transaction_type = self.cleaned_data['transaction_type']
 		customer = self.cleaned_data['customer']
 		subtotal = self.cleaned_data['payment_amount']
@@ -84,7 +86,8 @@ class PayOrRedeemPawnForm(forms.Form):
 								  customer=customer,
 								  subtotal=subtotal,
 								  tax=tax,
-								  total=total)
+								  total=total,
+								  employee=user.employee)
 		transaction.save(pawn_loan=pawn_loan)
 
 		return transaction

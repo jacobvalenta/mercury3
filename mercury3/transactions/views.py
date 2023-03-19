@@ -42,7 +42,7 @@ class InTransactionCreateView(TemplateView):
 				item.save()
 				item_data.append({'item': item, 'price': item.price_in})
 
-			transaction = self.form.save(item_data=item_data)
+			transaction = self.form.save(item_data=item_data, user=request.user)
 
 			return HttpResponseRedirect(reverse('transactions:detail',
 						   kwargs={'pk': transaction.pk}))
@@ -82,7 +82,8 @@ class OutTransactionCreateView(TemplateView):
 				item_data.append({'item': item_form.cleaned_data['item'],
 								  'price': item_form.cleaned_data['price']})
 
-			transaction = self.form.save(item_data=item_data)
+			transaction = self.form.save(item_data=item_data,
+										 user=request.user)
 
 			for item in [i['item'] for i in item_data]:
 				if transaction.transaction_type == Transaction.SALE:
@@ -116,7 +117,7 @@ class PayOrRedeemPawnView(FormView):
 					   kwargs={'pk': self.transaction.pk})
 
 	def form_valid(self, form):
-		self.transaction = form.save()
+		self.transaction = form.save(user=self.request.user)
 		return super().form_valid(form)
 
 	def get_context_data(self, *args, **kwargs):

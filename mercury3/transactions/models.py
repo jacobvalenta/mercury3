@@ -34,6 +34,9 @@ class Transaction(models.Model):
 	tax = models.DecimalField(max_digits=9, decimal_places=2)
 	total = models.DecimalField(max_digits=9, decimal_places=2)
 
+	employee = models.ForeignKey('employees.Employee', on_delete=models.CASCADE)
+	store = models.ForeignKey('stores.Store', on_delete=models.CASCADE)
+
 	timestamp = models.DateTimeField(auto_now_add=True)
 
 	def get_absolute_url(self):
@@ -45,7 +48,9 @@ class Transaction(models.Model):
 
 		create_pawnloan = False
 		if not self.pk and self.transaction_type == self.PAWN:
-			create_pawnloan = True 
+			create_pawnloan = True
+
+		self.store = self.employee.store
 
 		super().save(*args, **kwargs)
 
@@ -72,9 +77,9 @@ class Transaction(models.Model):
 					item.price_out = item.price_in
 					item.save()
 
-			pawn_loan.transactions.add(self)
-
 			pawn_loan.save()
+
+			pawn_loan.transactions.add(self)
 
 		elif create_pawnloan:
 			amount_due = amount_due=self.total * Decimal(0.20)
