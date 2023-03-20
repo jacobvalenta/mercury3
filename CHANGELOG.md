@@ -4,6 +4,7 @@
 
 - Icons
 - Employee History
+- Logger
 
 ## v3.0.5
 
