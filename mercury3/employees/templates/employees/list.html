@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block "content" %}
+    <h2 class="text-center">Employee List</h2>
+    
+    <p class="text-center">{{ object_list.count }} Employees</p>
+
+    {% for employee in object_list %}
+        <p><div style="float: right;"><a href="{% url 'employees:detail' employee.pk %}">View</a></div>#{{ employee.pk|stringformat:"07d" }}: {{ employee }}</p>
+    {% endfor %}
+{% endblock %}

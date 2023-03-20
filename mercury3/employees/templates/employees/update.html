@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block "content" %}
+	<h2 class="text-center">Update Employee</h2>
+
+	<p class="text-center">#{{ object.pk|stringformat:"05d" }}: {{ object }}</p>
+
+	<p>{{ user_form.errors }}</p>
+	<p>{{ employee_form.errors }}</p>
+
+	<form action="" method="POST">
+		{% csrf_token %}
+		{{ employee_form.as_p }}
+		<hr />
+		<h3> Change Password</h3>
+		{{ user_form.as_p }}
+		<button type="submit">Submit</button>
+	</form>
+{% endblock %}

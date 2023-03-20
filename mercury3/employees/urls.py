@@ -1,12 +1,12 @@
 from django.urls import path
 
-from .views import EmployeeManagementView, EmployeeCreateView
+from .views import (EmployeeManagementView, EmployeeCreateView,
+                    EmployeeListView, EmployeeDetailView, EmployeeUpdateView)
 
 urlpatterns = [
-    # path('create_in/', InTransactionCreateView.as_view(), name="create-in"),
-    # path('create_out/', OutTransactionCreateView.as_view(), name="create-out"),
-    # path('pay/', PayOrRedeemPawnView.as_view(), kwargs={"type": "pay"}, name="pay"),
-    # path('redeem/', PayOrRedeemPawnView.as_view(), kwargs={"type": "redeem"}, name="redeem"),
     path('', EmployeeManagementView.as_view(), name="manage"),
     path('create/', EmployeeCreateView.as_view(), name="create"),
+    path('list/', EmployeeListView.as_view(), name="list"),
+    path('<int:pk>/', EmployeeDetailView.as_view(), name="detail"),
+    path('<int:pk>/update/', EmployeeUpdateView.as_view(), name="update")
 ]

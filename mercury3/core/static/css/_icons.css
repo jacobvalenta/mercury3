@@ -1,10 +1,12 @@
 .icon{
-/*	position: relative;
-	top: 3px;*/
 	width: 16px;
 	height: 16px;
 	display: inline-block;
 	background-color: black;
+}
+.icon-top-fix{
+	position: relative;
+	top: 5px;	
 }
 .icon-small{
 	width: 14px;
@@ -24,6 +26,9 @@
 
 .icon.icon-item{
 	-webkit-mask-box-image: url('/static/img/item.png');
+}
+.icon.icon-mercury{
+	-webkit-mask-box-image: url('/static/img/mercury.png');
 }
 .icon.icon-people{
 	-webkit-mask-box-image: url('/static/img/people.png');

@@ -9,12 +9,23 @@ from mercury3.utils import get_trailing_number
 
 from .models import Employee
 
-class UserForm(forms.Form):
-	first_name = forms.CharField(max_length=24)
-	last_name = forms.CharField(max_length=24)
+class EmployeeFormsMixin(object):
+	def __init__(self, *args, instance=None, **kwargs):
+		self.instance = instance
 
-	password1 = forms.CharField(widget=PasswordInput, label="Password")
-	password2 = forms.CharField(widget=PasswordInput, label="Repeat Password")
+		print("Setting instance to:", instance)
+
+		super().__init__(*args, **kwargs)
+
+class UserForm(EmployeeFormsMixin, forms.Form):
+	password1 = forms.CharField(widget=PasswordInput, label="Password",
+								required=False)
+	password2 = forms.CharField(widget=PasswordInput, label="Repeat Password",
+								required=False)
+
+	# def __init__(self, *args, password_required=True, **kwargs):
+	# 	self.password_required = password_required
+	# 	super().__init__(*args, **kwargs)
 
 	def is_valid(self, *args, **kwargs):
 		valid = super().is_valid(*args, **kwargs)
@@ -22,30 +33,40 @@ class UserForm(forms.Form):
 		if self.cleaned_data['password1'] != self.cleaned_data['password2']:
 			valid = False
 
+		# print(self.instance)
+
+		if self.instance == None and self.cleaned_data['password1'] == "":
+			valid = False
+
+		# print("valid:", valid)
+
 		return valid
 
-	def generate_username(self):
-		username_base = "{0}{1}".format(self.cleaned_data['first_name'][0],
-										self.cleaned_data['last_name'])
+	def generate_username(self, first_name, last_name):
+		username_base = "{0}{1}".format(first_name[0],
+										last_name)
 		username_base = username_base.lower()
 
 		similar_usernames = User.objects.filter( \
 			username__startswith=username_base)
 
-		number = 0
+		number = -1
 		highest_increment = 0
 
 		for user in similar_usernames:
 			number = get_trailing_number(user.username)
 
 			if not number:
-				number = 0
+				number = -1
 
 			if number > highest_increment:
 				highest_increment = number
 
-		if number > 0:
-			suffix = number
+			if username_base == user.username:
+				number += 0
+
+		if number > -1:
+			suffix = number +1
 		else:
 			suffix = ""
 
@@ -53,22 +74,34 @@ class UserForm(forms.Form):
 
 		return username
 
-	def save(self, *args, **kwargs):
-		user = User.objects.create_user(\
-			self.generate_username(),
-			password=self.cleaned_data['password1'])
-
-		user.first_name = self.cleaned_data["first_name"]
-		user.last_name = self.cleaned_data["last_name"]
+	def save(self, *args, first_name=None, last_name=None, **kwargs):
+		if self.instance:
+			user = self.instance
+		else:
+			user = User.objects.create_user(\
+				self.generate_username(first_name, last_name),
+				password=self.cleaned_data['password1'])
 
 		user.save()
 
 		return user
 
-class EmployeeForm(forms.Form):
+class EmployeeForm(EmployeeFormsMixin, forms.Form):
+	first_name = forms.CharField(max_length=20)
+	last_name = forms.CharField(max_length=20)
+
 	store = forms.ModelChoiceField(queryset=Store.objects.all())
 
-	def save(self, user, *args, **kwargs):
-		employee = Employee(user=user, store=self.cleaned_data['store'])
-		employee.save()
+	def save(self, *args, commit=True, **kwargs):
+		if self.instance:
+			employee = self.instance
+			employee.store = self.cleaned_data['store']
+			employee.first_name = self.cleaned_data['first_name']
+			employee.last_name = self.cleaned_data['last_name']
+		else:
+			employee = Employee(user=user, store=self.cleaned_data['store'],
+								first_name=self.cleaned_data['first_name'],
+								last_name=self.cleaned_data['last_name'])
+		if commit:
+			employee.save()
 		return employee

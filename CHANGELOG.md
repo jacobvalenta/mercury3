@@ -1,5 +1,12 @@
 # Changelog
 
+## v3.0.6
+
+- Icons
+? Item Location Setter
+? Logger
+? Store Location Factory
+
 ## v3.0.5
 
 - Add Stores and Locations.

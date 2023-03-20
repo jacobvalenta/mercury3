@@ -18,7 +18,9 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1 class="text-center"><a href="/">Mercury Pawn</a></h1>
+			<h1 class="text-center">
+				<a href="/"><i class="icon icon-top-fix icon-x2 icon-mercury"></i> Mercury Pawn</a>
+			</h1>
 			{% if request.user.is_authenticated %}
 				<p class="text-center"><b>Welcome, {{ request.user.employee }}</b></p>
 			{% endif %}

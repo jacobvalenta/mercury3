@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block "content" %}
+    <h2 class="text-center">Employee Information</h2>
+    
+    <p class="text-center">#{{ object.pk|stringformat:"07d" }}: {{ object }}</p>
+
+    <p>Number: <b>#{{ object.pk|stringformat:"07d" }}</b></p>
+
+    <p>Username: {{ object.user.username }}</p>
+
+    <p>First Name: <b>{{ object.first_name }}</b></p>
+    <p>Last Name: <b>{{ object.last_name }}</b></p>
+
+    <p class="text-center"><i>Last edited by: {{ object.changed_by.employee }} at {{ object.changed_at }}</i></p>
+
+    <hr />
+
+    <h3>Actions</h3>
+    <a href="{% url 'employees:update' object.pk %}">Edit Information</a>
+{% endblock %}
