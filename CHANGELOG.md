@@ -3,7 +3,7 @@
 ## v3.0.6
 
 - Icons
-? Item Location Setter
+- Employee History
 ? Logger
 ? Store Location Factory
 

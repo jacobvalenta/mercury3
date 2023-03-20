@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.db import models
 
 from simple_history.models import HistoricalRecords
@@ -19,6 +20,21 @@ class Employee(models.Model):
 
 	def __str__(self):
 		return "{0} {1}".format(self.first_name, self.last_name)
+
+	def save(self, **kwargs):
+		Log = apps.get_model('logs.Log')
+
+		if not self.pk:
+			log = Log(user=self._history_user,
+				message="created Employee ({0})".format(str(self)))
+			log.save()
+
+		else:
+			log = Log(user=self._history_user,
+				message="edited Employee ({0})".format(str(self)))
+			log.save()
+
+		super().save(**kwargs)
 
 	@property
 	def _history_user(self):

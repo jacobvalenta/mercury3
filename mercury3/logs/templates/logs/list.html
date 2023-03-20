@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block "content" %}
+    <h2 class="text-center">Logs</h2>
+
+    {% for log in object_list %}
+        <p>
+            <a href="/logs/employee/{{ log.user.employee.pk }}/">{{ log.user.employee }}</a>
+            {{ log.message }} at {{ log.timestamp|date:"m d Y h:m:s a"}}
+        </p>
+    {% endfor %}
+{% endblock %}

@@ -51,13 +51,13 @@ class UserForm(EmployeeFormsMixin, forms.Form):
 			username__startswith=username_base)
 
 		number = -1
-		highest_increment = 0
+		highest_increment = -1
 
 		for user in similar_usernames:
 			number = get_trailing_number(user.username)
 
 			if not number:
-				number = -1
+				number = 0
 
 			if number > highest_increment:
 				highest_increment = number
@@ -92,7 +92,7 @@ class EmployeeForm(EmployeeFormsMixin, forms.Form):
 
 	store = forms.ModelChoiceField(queryset=Store.objects.all())
 
-	def save(self, *args, commit=True, **kwargs):
+	def save(self, user, *args, commit=True, **kwargs):
 		if self.instance:
 			employee = self.instance
 			employee.store = self.cleaned_data['store']
