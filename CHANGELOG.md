@@ -4,8 +4,6 @@
 
 - Icons
 - Employee History
-? Logger
-? Store Location Factory
 
 ## v3.0.5
 
