@@ -3,9 +3,7 @@
 {% block "content" %}
 	<h2 class="text-center">Location Assignment</h2>
 
-	{% if formset.errors %}
-		{{ formset.errors }}
-	{% endif %}
+	<h3 class="text-center">{{ items_count }} Items without locations</h3>
 
 	<form class="text-center" action="" method="POST">
 		{% csrf_token %}

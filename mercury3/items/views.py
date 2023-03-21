@@ -76,7 +76,8 @@ class LocationAssignmentView(ModelFormSetView):
 		items_and_forms_zipped = zip(items, data['formset'])
 
 		data.update({
-			'items_and_forms_zipped': items_and_forms_zipped
+			'items_and_forms_zipped': items_and_forms_zipped,
+			'items_count': items.count()
 		})
 		return data
 
