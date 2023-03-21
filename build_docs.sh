@@ -1,1 +1,1 @@
-pdoc mercury3 -o ./../mercury3_docs
+pdoc mercury3 -o ./docs
