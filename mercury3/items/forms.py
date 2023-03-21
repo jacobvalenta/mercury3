@@ -28,5 +28,8 @@ class SetItemLocationForm(forms.ModelForm):
 
 	class Meta:
 		model = Item
+		fields = ["location"]
 
 	# def save(self, *args, commit=False, **kwargs):
+	# 	# print(self.cleaned_data)
+	# 	print("Saving Item Location")
