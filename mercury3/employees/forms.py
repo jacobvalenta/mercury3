@@ -13,8 +13,6 @@ class EmployeeFormsMixin(object):
 	def __init__(self, *args, instance=None, **kwargs):
 		self.instance = instance
 
-		print("Setting instance to:", instance)
-
 		super().__init__(*args, **kwargs)
 
 class UserForm(EmployeeFormsMixin, forms.Form):
@@ -23,22 +21,14 @@ class UserForm(EmployeeFormsMixin, forms.Form):
 	password2 = forms.CharField(widget=PasswordInput, label="Repeat Password",
 								required=False)
 
-	# def __init__(self, *args, password_required=True, **kwargs):
-	# 	self.password_required = password_required
-	# 	super().__init__(*args, **kwargs)
-
 	def is_valid(self, *args, **kwargs):
 		valid = super().is_valid(*args, **kwargs)
 		
 		if self.cleaned_data['password1'] != self.cleaned_data['password2']:
 			valid = False
 
-		# print(self.instance)
-
 		if self.instance == None and self.cleaned_data['password1'] == "":
 			valid = False
-
-		# print("valid:", valid)
 
 		return valid
 

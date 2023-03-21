@@ -54,6 +54,30 @@ class EmployeeFormsMixin(object):
 					self.employee_form = EmployeeForm()
 		return self.employee_form
 
+	def post(self, request, pk=None):
+		user_form = self.get_user_form()
+		employee_form = self.get_employee_form()
+
+		if user_form.is_valid() and employee_form.is_valid():
+			first_name = employee_form.cleaned_data['first_name']
+			last_name = employee_form.cleaned_data['last_name']
+
+			if pk:
+				user = user_form.save()
+			else:
+				user = user_form.save(first_name=first_name, last_name=last_name)
+
+			employee = employee_form.save(user, commit=False)
+			
+			employee._history_user = request.user
+			employee.save()
+
+			return HttpResponseRedirect(reverse('employees:detail',
+												kwargs={'pk': employee.pk}))
+		else:
+			return TemplateResponse(request, self.get_template_names(),
+									self.get_context_data())
+
 	def get_context_data(self, *args, **kwargs):
 		data = super().get_context_data(*args, **kwargs)
 
@@ -70,28 +94,11 @@ class EmployeeManagementView(TemplateView):
 
 
 class EmployeeCreateView(EmployeeFormsMixin, TemplateView):
+	"""A view which subclasses EmployeeFormsMix to validate
+	   and save two forms."""
+
 	model = Employee
 	template_name = "employees/create.html"
-
-	def post(self, request):
-		user_form = self.get_user_form()
-		employee_form = self.get_employee_form()
-
-		if user_form.is_valid() and employee_form.is_valid():
-			first_name = employee_form.cleaned_data['first_name']
-			last_name = employee_form.cleaned_data['last_name']
-
-			user = user_form.save(first_name=first_name, last_name=last_name)
-			employee = employee_form.save(user, commit=False)
-			
-			employee.changed_by = request.user
-			employee.save()
-
-			return HttpResponseRedirect(reverse('employees:manage'))
-		else:
-			return TemplateResponse(request, self.get_template_names(),
-									self.get_context_data())
-
 
 class EmployeeListView(ListView):
 	model = Employee
@@ -103,26 +110,7 @@ class EmployeeDetailView(DetailView):
 	template_name = "employees/detail.html"
 
 class EmployeeUpdateView(EmployeeFormsMixin, DetailView):
+	"""A view which subclasses EmployeeFormsMix to validate
+	   and save two forms."""
 	model = Employee
 	template_name = "employees/update.html"
-
-	def post(self, request, pk):
-		self.object = self.get_object()
-
-		user_form = self.get_user_form()
-		employee_form = self.get_employee_form()
-
-		if user_form.is_valid() and employee_form.is_valid():
-			first_name = employee_form.cleaned_data['first_name']
-			last_name = employee_form.cleaned_data['last_name']
-
-			user = user_form.save()
-			employee = employee_form.save(user, commit=False)
-			employee._history_user = request.user
-			employee.save()
-
-			return HttpResponseRedirect(reverse('employees:detail',
-												kwargs={'pk': employee.pk}))
-		else:
-			return TemplateResponse(request, self.get_template_names(),
-									self.get_context_data())
