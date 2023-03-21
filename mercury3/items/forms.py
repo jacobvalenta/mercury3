@@ -31,5 +31,4 @@ class SetItemLocationForm(forms.ModelForm):
 		fields = ["location"]
 
 	# def save(self, *args, commit=False, **kwargs):
-	# 	# print(self.cleaned_data)
-	# 	print("Saving Item Location")
+		
