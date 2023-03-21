@@ -8,10 +8,12 @@
 		{{ object.status|upper }}
 	</p>
 
-	<div>
+	<p>
 		Make: {% if object.make %}{{ object.make }}{% endif %}<br />
-		Model: {{ object.model }}
-	</div>
+		Model: {{ object.model }}<br />
+
+		Location: {{ object.location }}
+	</p>
 
 	<br />
 
@@ -35,4 +37,5 @@
 	<br />
 
 	<h3>Actions</h3>
+	<a href="{% url 'items:set-location' object.pk %}">Set Location</a>
 {% endblock %}

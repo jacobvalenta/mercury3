@@ -31,6 +31,9 @@ class Item(models.Model):
 
 	status = models.CharField(max_length=11, choices=STATUS_CHOICES)
 
+	location = models.ForeignKey('stores.Location', blank=True, null=True,
+								 on_delete=models.SET_NULL)
+
 	def __str__(self):
 		desc = "{0} {1}".format(self.make if self.make else '',
 							    self.model if self.model else '').strip()

@@ -5,6 +5,8 @@
 - Icons
 - Employee History
 - Logger
+- Credits
+- Set Item Location
 
 ## v3.0.5
 

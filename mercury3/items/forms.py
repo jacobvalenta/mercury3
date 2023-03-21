@@ -1,5 +1,7 @@
 from django import forms
 
+from mercury3.stores.models import Location
+
 from .models import Item
 
 class ItemForm(forms.ModelForm):
@@ -19,3 +21,8 @@ class ItemScanForm(forms.Form):
 		super().__init__(*args, **kwargs)
 
 		self.fields['item'].queryset = audit.items_left.all()
+
+class SetItemLocationForm(forms.ModelForm):
+	class Meta:
+		model = Item
+		fields = ["location"]

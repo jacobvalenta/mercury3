@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import (ItemSearchView, ItemDetailView, InventoryAuditView,
+from .views import (ItemSearchView, ItemDetailView, SetItemLocationView,
+                    InventoryAuditView,
                     InventoryAuditDetailView, audit_scan_item_view,
                     audit_finish, audit_reopen_view,
                     audit_make_missing_items_view,
@@ -9,6 +10,7 @@ from .views import (ItemSearchView, ItemDetailView, InventoryAuditView,
 urlpatterns = [
     path('search/', ItemSearchView.as_view(), name="search"),
     path('<int:pk>/', ItemDetailView.as_view(), name="detail"),
+    path('<int:pk>/set_location/', SetItemLocationView.as_view(), name="set-location"),
 
     path('audit/', InventoryAuditView.as_view(), name="inventory-audit"),
     path('audit/done/', audit_finish, name="inventory-audit-done"),

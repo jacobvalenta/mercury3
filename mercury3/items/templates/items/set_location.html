@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block "content" %}
+	<h2 class="text-center">Set Item Location</h2>
+
+	<p class="text-center">
+		#{{ pk|stringformat:"07d" }}
+	</p>
+
+	<form class="text-center" action="" method="POST">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<button type="submit">Set Location</button>
+	</form>
+{% endblock %}

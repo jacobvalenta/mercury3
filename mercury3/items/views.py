@@ -5,8 +5,9 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 from django.views.generic import TemplateView, DetailView
+from django.views.generic.edit import UpdateView
 
-from .forms import ItemScanForm
+from .forms import ItemScanForm, SetItemLocationForm
 from .models import Item, InventoryAudit
 
 class ItemSearchView(TemplateView):
@@ -30,6 +31,21 @@ class ItemSearchView(TemplateView):
 class ItemDetailView(DetailView):
 	template_name = "items/detail.html"
 	model = Item
+
+class SetItemLocationView(UpdateView):
+	template_name = "items/set_location.html"
+	form_class = SetItemLocationForm
+	queryset = Item.objects.all()
+
+	def get_success_url(self):
+		return reverse("items:detail", kwargs={"pk": self.kwargs['pk']})
+
+	def get_context_data(self, *args, **kwargs):
+		data = super().get_context_data(*args, **kwargs)
+		data.update({
+			'pk': self.kwargs['pk']
+		})
+		return data
 
 class InventoryAuditView(TemplateView):
 
