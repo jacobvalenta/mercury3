@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (ItemSearchView, ItemDetailView, SetItemLocationView,
-                    InventoryAuditView,
+                    LocationAssignmentView, InventoryAuditView,
                     InventoryAuditDetailView, audit_scan_item_view,
                     audit_finish, audit_reopen_view,
                     audit_make_missing_items_view,
@@ -9,6 +9,7 @@ from .views import (ItemSearchView, ItemDetailView, SetItemLocationView,
 
 urlpatterns = [
     path('search/', ItemSearchView.as_view(), name="search"),
+    path('location_assignment/', LocationAssignmentView.as_view(), name="location-assignment"),
     path('<int:pk>/', ItemDetailView.as_view(), name="detail"),
     path('<int:pk>/set_location/', SetItemLocationView.as_view(), name="set-location"),
 

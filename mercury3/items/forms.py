@@ -23,6 +23,10 @@ class ItemScanForm(forms.Form):
 		self.fields['item'].queryset = audit.items_left.all()
 
 class SetItemLocationForm(forms.ModelForm):
+	location = forms.ModelChoiceField(queryset=Location.objects.all(),
+									  required=False)
+
 	class Meta:
 		model = Item
-		fields = ["location"]
+
+	# def save(self, *args, commit=False, **kwargs):

@@ -1,11 +1,13 @@
 from django.contrib.postgres.search import SearchVector
 from django.http import (HttpResponseBadRequest, HttpResponseRedirect,
 						 Http404, JsonResponse)
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 from django.views.generic import TemplateView, DetailView
 from django.views.generic.edit import UpdateView
+
+from extra_views import ModelFormSetView
 
 from .forms import ItemScanForm, SetItemLocationForm
 from .models import Item, InventoryAudit
@@ -44,6 +46,37 @@ class SetItemLocationView(UpdateView):
 		data = super().get_context_data(*args, **kwargs)
 		data.update({
 			'pk': self.kwargs['pk']
+		})
+		return data
+
+class LocationAssignmentView(ModelFormSetView):
+	model = Item
+	factory_kwargs = {'extra': 0}
+	queryset = Item.objects.filter(location=None)
+	form_class = SetItemLocationForm
+	template_name = "items/location_assignment.html"
+	# succes_url = reverse_lazy("main-page")
+
+	def formset_valid(self, formset):
+		print("formset valid")
+		for form in formset:
+			form.save()
+
+		return HttpResponseRedirect(reverse("items:location-assignment"))
+
+	# def formset_invalid(self, formset):
+	# 	print("Invalid")
+	# 	print(formset)
+
+	def get_context_data(self, *args, **kwargs):
+		data = super().get_context_data(*args, **kwargs)
+
+		items = self.queryset
+
+		items_and_forms_zipped = zip(items, data['formset'])
+
+		data.update({
+			'items_and_forms_zipped': items_and_forms_zipped
 		})
 		return data
 

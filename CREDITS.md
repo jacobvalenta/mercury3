@@ -11,6 +11,6 @@
 
 Development made possible by Guido van Rossum and the team at [www.python.org](https://www.python.org/)
 
-## Django 4.1.7
+## Django 4.2 Beta
 				
 Development made possible by the team at [www.djangoproject.com](https://www.djangoproject.com/)

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block "content" %}
+	<h2 class="text-center">Location Assignment</h2>
+
+	{% if formset.errors %}
+		{{ formset.errors }}
+	{% endif %}
+
+	<form class="text-center" action="" method="POST">
+		{% csrf_token %}
+		{{ formset.management_form }}
+
+		{% for item, form in items_and_forms_zipped %}
+			<div>
+				<div style="display: inline-block;"># {{ item.pk|stringformat:"07d" }} {{ item }}</div>
+				<div style="display: inline-block;">{{ form.as_p }}</div>
+			</div>
+			<hr />
+		{% endfor %}
+		<button type="submit">Set Location</button>
+	</form>
+{% endblock %}
