@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block "content" %}
+	<h2 class="text-center">Drawers</h2>
+
+	{% for drawer in object_list %}
+		<div>
+			<div style="display: inline-block;">#{{ drawer.identifier }}</div>
+			<div style="display: inline-block;">
+				<a href="{% url 'drawers:close' drawer.identifier %}">Close</a>
+			</div>
+		</div>
+	{% endfor %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block "content" %}
+	<h2 class="text-center">Close Drawer</h2>
+
+	<form action="" method="POST">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<button type="submit">Close Drawer</button>
+	</form>
+{% endblock %}
