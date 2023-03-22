@@ -1,0 +1,9 @@
+[
+{
+    "model": "stores.store",
+    "pk": 1,
+    "fields": {
+        "name": "Testville"
+    }
+}
+]

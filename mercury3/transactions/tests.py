@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -12,7 +13,8 @@ from mercury3.utils import TWO_SECONDS, get_pk_from_url
 from .models import Transaction
 
 class TransactionTestCase(TestCase):
-	fixtures = ["customers_test.json"]
+	fixtures = ["stores_test.json", "customers_test.json",
+				"employees_test.json"]
 
 	def test_in_transaction_200(self):
 		"""Test In Transaction"""
@@ -40,6 +42,7 @@ class TransactionTestCase(TestCase):
 		}
 
 		# Response is a redirect
+		self.client.login(username='temployee', password='brickandmortar')
 		response = self.client.post(reverse('transactions:create-in'),
 									post_data)
 		self.assertEqual(response.status_code, 302)
@@ -71,6 +74,7 @@ class TransactionTestCase(TestCase):
 
 		# Response is a redirect
 		url = reverse('transactions:create-in')
+		self.client.login(username='temployee', password='brickandmortar')
 		response = self.client.post(url, post_data)
 		self.assertEqual(response.status_code, 302)
 
@@ -105,6 +109,7 @@ class TransactionTestCase(TestCase):
 
 		# Response is a redirect
 		pawn_url = reverse('transactions:create-in')
+		self.client.login(username='temployee', password='brickandmortar')
 		pawn_response = self.client.post(pawn_url, pawn_post_data)
 		self.assertEqual(pawn_response.status_code, 302)
 
