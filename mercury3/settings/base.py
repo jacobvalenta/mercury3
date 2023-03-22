@@ -12,7 +12,7 @@ import os
 
 from pathlib import Path
 
-VERSION = "3.0.5"
+VERSION = "3.0.6"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

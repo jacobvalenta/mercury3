@@ -3,10 +3,12 @@
 ## v3.0.6
 
 - Icons
-- Employee History
-- Logger
-- Credits
-- Set Item Location
+- Logger (Log Employee create and edit "events")
+- Employee history model.
+- Credits.
+- Set item location.
+- Bulk set item location (Location Assignment).
+- Fix tests
 
 ## v3.0.5
 
