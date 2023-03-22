@@ -24,6 +24,7 @@ urlpatterns = [
 
     path('', include('mercury3.core.urls')),
     path('', include('mercury3.customers.urls')),
+    path('drawers/', include(('mercury3.drawers.urls', 'drawers'), namespace="drawers")),
     path('employees/', include(('mercury3.employees.urls', 'employees'), namespace="employees")),
     path('items/', include(('mercury3.items.urls', 'items'), namespace="items")),
     path('logs/', include(('mercury3.logs.urls', 'logs'), namespace="logs")),

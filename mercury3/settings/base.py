@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
     'mercury3.core',
     'mercury3.customers',
+    'mercury3.drawers',
     'mercury3.employees',
     'mercury3.items',
     'mercury3.layaway_plans',
