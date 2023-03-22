@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.0.7
+
+? Drawers
+? More logs (Transactions, Item Location Change)
+? More tests (Employees)
+
 ## v3.0.6
 
 - Icons
