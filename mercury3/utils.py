@@ -1,5 +1,7 @@
 import re
 
+from django.apps import apps
+
 STATE_CHOICES = (
 	('AL', "Alabama"),
 	('AK', "Alaska"),
@@ -81,3 +83,38 @@ def get_trailing_number(s):
 	"""
 	m = re.search(r'\d+$', s)
 	return int(m.group()) if m else None
+
+def generate_username(first_name, last_name):
+	if not first_name or not last_name:
+		raise ValueError("first_name and last_name required.")
+
+	User = apps.get_model('auth.User')
+
+	username_base = "{0}{1}".format(first_name[0],
+									last_name)
+	username_base = username_base.lower()
+
+	similar_usernames = User.objects.filter( \
+		username__startswith=username_base)
+
+	number = -1
+	highest_increment = -1
+
+	for user in similar_usernames:
+		number = get_trailing_number(user.username)
+
+		if username_base == user.username:
+			number == 0
+		if not number:
+			number = 0
+		elif number > highest_increment:
+			highest_increment = number
+
+	if number > -1:
+		suffix = number +1
+	else:
+		suffix = ""
+
+	username = "{}{}".format(username_base, suffix)
+
+	return username

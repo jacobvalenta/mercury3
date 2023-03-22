@@ -5,85 +5,59 @@ from django.contrib.auth.models import User
 from django.forms.widgets import PasswordInput
 
 from mercury3.stores.models import Store
-from mercury3.utils import get_trailing_number
+from mercury3.utils import get_trailing_number, generate_username
 
 from .models import Employee
 
-class EmployeeFormsMixin(object):
-	def __init__(self, *args, instance=None, **kwargs):
-		self.instance = instance
-
-		super().__init__(*args, **kwargs)
-
-class UserForm(EmployeeFormsMixin, forms.Form):
+class UserForm(forms.ModelForm):
 	password1 = forms.CharField(widget=PasswordInput, label="Password",
 								required=False)
 	password2 = forms.CharField(widget=PasswordInput, label="Repeat Password",
 								required=False)
 
+	class Meta:
+		model = User
+		fields = ["password1", "password2"]
+
 	def is_valid(self, *args, **kwargs):
 		valid = super().is_valid(*args, **kwargs)
 		
+		# If passwords do not match: fail
 		if self.cleaned_data['password1'] != self.cleaned_data['password2']:
 			valid = False
 
-		if self.instance == None and self.cleaned_data['password1'] == "":
+		# If password is not set on new user: fail
+		if not self.instance.pk and self.cleaned_data['password1'] == "":
 			valid = False
 
 		return valid
 
-	def generate_username(self, first_name, last_name):
-		username_base = "{0}{1}".format(first_name[0],
-										last_name)
-		username_base = username_base.lower()
-
-		similar_usernames = User.objects.filter( \
-			username__startswith=username_base)
-
-		number = -1
-		highest_increment = -1
-
-		for user in similar_usernames:
-			number = get_trailing_number(user.username)
-
-			if not number:
-				number = 0
-
-			if number > highest_increment:
-				highest_increment = number
-
-			if username_base == user.username:
-				number += 0
-
-		if number > -1:
-			suffix = number +1
-		else:
-			suffix = ""
-
-		username = "{}{}".format(username_base, suffix)
-
-		return username
-
-	def save(self, *args, first_name=None, last_name=None, **kwargs):
-		if self.instance:
+	def save(self, first_name, last_name, commit=True):
+		if self.instance.pk:
 			user = self.instance
+
+			if self.cleaned_data['password1']:
+				user.set_password(self.cleaned_data['password1'])
+				user.save()
 		else:
 			user = User.objects.create_user(\
-				self.generate_username(first_name, last_name),
+				generate_username(first_name, last_name),
 				password=self.cleaned_data['password1'])
-
-		user.save()
 
 		return user
 
-class EmployeeForm(EmployeeFormsMixin, forms.Form):
+class EmployeeForm(forms.ModelForm):
 	first_name = forms.CharField(max_length=20)
 	last_name = forms.CharField(max_length=20)
 
 	store = forms.ModelChoiceField(queryset=Store.objects.all())
 
-	def save(self, user, *args, commit=True, **kwargs):
-		if self.instance:
+	class Meta:
+		model = Employee
+		fields = ["first_name", "last_name", "store"]
+
+	def save(self, user, commit=True):
+		if self.instance.pk:
 			employee = self.instance
 			employee.store = self.cleaned_data['store']
 			employee.first_name = self.cleaned_data['first_name']

@@ -10,6 +10,12 @@ from .models import Employee
 
 class EmployeeFormsMixin(object):
 	def get_user_form(self):
+		"""
+		Returns the `user_form` attribute if it is already set,
+		otherwise it instanciates a new `UserForm` with appropriate
+		data.
+		"""
+
 		try:
 			return self.user_form
 		except AttributeError:
@@ -17,6 +23,7 @@ class EmployeeFormsMixin(object):
 				instance = self.get_object()
 			except AttributeError:
 				instance = None
+
 			if self.request.POST:
 				self.user_form = UserForm(self.request.POST,
 										  instance=instance)
@@ -25,7 +32,11 @@ class EmployeeFormsMixin(object):
 		return self.user_form
 
 	def get_employee_form(self):
-		print("Here")
+		"""
+		Returns the `employee_form` attribute if it is already set,
+		otherwise it instanciates a new `EmployeeForm` with appropriate
+		data.
+		"""
 
 		try:
 			return self.employee_form
@@ -35,21 +46,16 @@ class EmployeeFormsMixin(object):
 			except AttributeError:
 				employee = None
 
-			if employee:
-				initial = {'first_name': employee.first_name,
-					       'last_name': employee.last_name,
-					       'store': employee.store}
-			else:
-				initial = {}
-
 			if self.request.POST:
-				self.employee_form = EmployeeForm( \
-					self.request.POST,
-					instance=employee,
-					initial=initial)
+				if employee:
+					self.employee_form = EmployeeForm( \
+						self.request.POST,
+						instance=employee)
+				else:
+					self.employee_form = EmployeeForm(self.request.POST)
 			else:
-				if initial:
-					self.employee_form = EmployeeForm(initial=initial)
+				if employee:
+					self.employee_form = EmployeeForm(instance=employee)
 				else:
 					self.employee_form = EmployeeForm()
 		return self.employee_form
@@ -62,18 +68,17 @@ class EmployeeFormsMixin(object):
 			first_name = employee_form.cleaned_data['first_name']
 			last_name = employee_form.cleaned_data['last_name']
 
-			if pk:
-				user = user_form.save()
-			else:
-				user = user_form.save(first_name=first_name, last_name=last_name)
+			user = user_form.save(first_name, last_name)
 
 			employee = employee_form.save(user, commit=False)
 			
+			# Maybe move _history_user assignment to models.py?
 			employee._history_user = request.user
 			employee.save()
 
-			return HttpResponseRedirect(reverse('employees:detail',
-												kwargs={'pk': employee.pk}))
+			success_url = reverse('employees:detail',
+			                      kwargs={'pk': employee.pk})
+			return HttpResponseRedirect(success_url)
 		else:
 			return TemplateResponse(request, self.get_template_names(),
 									self.get_context_data())
@@ -93,24 +98,26 @@ class EmployeeManagementView(TemplateView):
 	template_name = "employees/manage.html"
 
 
-class EmployeeCreateView(EmployeeFormsMixin, TemplateView):
-	"""A view which subclasses EmployeeFormsMix to validate
-	   and save two forms."""
-
-	model = Employee
-	template_name = "employees/create.html"
-
 class EmployeeListView(ListView):
 	model = Employee
 	template_name = "employees/list.html"
 
 
-class EmployeeDetailView(DetailView):
+class EmployeeCreateView(EmployeeFormsMixin, TemplateView):
+	"""A view which subclasses `EmployeeFormsMixin` to validate
+	   and save two forms."""
+
 	model = Employee
-	template_name = "employees/detail.html"
+	template_name = "employees/create.html"
+
 
 class EmployeeUpdateView(EmployeeFormsMixin, DetailView):
-	"""A view which subclasses EmployeeFormsMix to validate
+	"""A view which subclasses `EmployeeFormsMixin` to validate
 	   and save two forms."""
 	model = Employee
 	template_name = "employees/update.html"
+
+
+class EmployeeDetailView(DetailView):
+	model = Employee
+	template_name = "employees/detail.html"
