@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.urls import reverse
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
 
@@ -9,13 +9,15 @@ from .models import Drawer
 class OpenDrawerView(CreateView):
 	form_class = OpenDrawerForm
 	template_name = "drawers/open.html"
-	success_url = reverse_lazy("main-page")
+	
+	def get_success_url(self):
+		return reverse("main-page")
 
 	def form_valid(self, form):
 		drawer = form.save(commit=False)
 		drawer.opened_by = self.request.user.employee
 
-		drawer.save()
+		drawer.save(user=self.request.user)
 
 		return HttpResponseRedirect(self.get_success_url())
 
@@ -23,10 +25,12 @@ class CloseDrawerView(UpdateView):
 	model = Drawer
 	form_class = CloseDrawerForm
 	template_name = "drawers/close.html"
-	success_url = reverse_lazy("main-page")
+
+	def get_success_url(self):
+		return reverse("main-page")
 
 	def form_valid(self, form):
-		drawer = form.save()
+		drawer = form.save(user=self.request.user)
 		
 		return HttpResponseRedirect(self.get_success_url())
 
