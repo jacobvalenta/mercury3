@@ -1,4 +1,4 @@
-from django.contrib.postgres.search import SearchVector
+from django.db.models import Q
 from django.http import (HttpResponseBadRequest, HttpResponseRedirect,
 						 Http404, JsonResponse)
 from django.urls import reverse, reverse_lazy
@@ -20,9 +20,12 @@ class ItemSearchView(TemplateView):
 		results = []
 
 		if query:
-			vector = SearchVector('make') + SearchVector('model') + \
-					 SearchVector('pk')
-			items = Item.objects.annotate(search=vector).filter(search__icontains=query)
+			make_search = Q(make__icontains=query)
+			model_search = Q(model__icontains=query)
+			pk_search = Q(pk__icontains=query)
+
+			items = Item.objects.filter(make_search|model_search|pk_search)
+
 			for item in items:
 				results.append({'pk': item.pk, 'make': item.make,
 								'model': item.model,
