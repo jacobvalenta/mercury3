@@ -18,10 +18,16 @@ class DrawerIdentifier(models.Model):
 	def __str__(self):
 		return self.name
 
+class DrawerManager(models.Manager):
+    def open(self):
+    	return self.filter(is_open=True)
+
 class Drawer(models.Model):
 	identifier_key = models.ForeignKey(DrawerIdentifier, blank=True,
 	                                   null=True, on_delete=models.PROTECT)
 
+	store = models.ForeignKey('stores.Store', blank=True, null=True,
+	                          on_delete=models.PROTECT)
 	balance = models.DecimalField(max_digits=9, decimal_places=2)
 
 	is_open = models.BooleanField(default=True)
@@ -37,10 +43,12 @@ class Drawer(models.Model):
 	opened_at = models.DateTimeField(auto_now_add=True)
 	closed_at = models.DateTimeField(blank=True, null=True)
 
+	objects = DrawerManager()
+
 	# changed_by = models.ForeignKey('auth.User', on_delete=models.PROTECT)
 
 	def __str__(self):
-		return "#{}: ${}".format(self.identifier, self.balance)
+		return self.identifier
 
 	@property
 	def identifier(self):
@@ -56,26 +64,39 @@ class Drawer(models.Model):
 		self.closed_at = timezone.now()
 		self.is_open = False
 
+		self.store.balance += self.balance
+		self.store.save()
+
 		msg_template = "closed a Drawer ({}) with $@protected({})."
 		msg = msg_template.format(self.identifier, self.balance)
 		Log.objects.create(user=user, message=msg)
 
 		self.save(user)
 
+	def check_for_open_drawer(self):
+		"""
+		Check to make sure there are no open drawers
+		(with this identifier).
+		"""
+		if self.identifier_key:
+			number_of_open_drawers_with_this_identifier = \
+				Drawer.objects.filter(is_open=True,
+				                      identifier_key=self.identifier_key)
+
+			if len(number_of_open_drawers_with_this_identifier) > 0:
+				msg = "Drawer already open with this identifier."
+				raise IntegrityError(msg)
+
 	def save(self, user, **kwargs):
 		Log = apps.get_model('logs.Log')
+		opened = False
 
 		if not self.pk:
-			# Check to make sure there are no open drawers
-			# (with this identifier).
-			if self.identifier_key:
-				number_of_open_drawers_with_this_identifier = \
-					Drawer.objects.filter(is_open=True,
-					                      identifier_key=self.identifier_key)
+			opened = True
 
-				if len(number_of_open_drawers_with_this_identifier) > 0:
-					msg = "Drawer already open with this identifier."
-					raise IntegrityError(msg)
+			self.store = user.employee.store
+
+			self.check_for_open_drawer()
 
 			# Log Drawer creation
 			msg_template = "opened a Drawer ({}) with $@protected({})."
@@ -83,3 +104,7 @@ class Drawer(models.Model):
 			Log.objects.create(user=user, message=msg)
 
 		super().save(**kwargs)
+
+		if opened:
+			self.store.balance -= self.balance
+			self.store.save()

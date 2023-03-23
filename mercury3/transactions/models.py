@@ -25,17 +25,23 @@ class Transaction(models.Model):
 	)
 	"""The options for `transaction_type`"""
 
-	transaction_type = models.CharField(max_length=7, choices=TRANSACTION_TYPE_CHOICES)
+	transaction_type = models.CharField(max_length=7,
+	                                    choices=TRANSACTION_TYPE_CHOICES)
 
-	customer = models.ForeignKey('customers.Customer', on_delete=models.CASCADE, blank=True, null=True)
-	items = models.ManyToManyField('items.Item', through="transactions.TransactionItem")
+	customer = models.ForeignKey('customers.Customer',
+	                             on_delete=models.PROTECT,
+	                             blank=True, null=True)
+	items = models.ManyToManyField('items.Item',
+	                               through="transactions.TransactionItem")
 
 	subtotal = models.DecimalField(max_digits=9, decimal_places=2)
 	tax = models.DecimalField(max_digits=9, decimal_places=2)
 	total = models.DecimalField(max_digits=9, decimal_places=2)
 
-	employee = models.ForeignKey('employees.Employee', on_delete=models.CASCADE)
-	store = models.ForeignKey('stores.Store', on_delete=models.CASCADE)
+	employee = models.ForeignKey('employees.Employee',
+	                             on_delete=models.PROTECT)
+	drawer = models.ForeignKey('drawers.Drawer', on_delete=models.PROTECT)
+	store = models.ForeignKey('stores.Store', on_delete=models.PROTECT)
 
 	timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -61,6 +67,16 @@ class Transaction(models.Model):
 
 		super().save(**kwargs)
 
+		# Add or remove money from drawer
+		if self.transaction_type in [self.SALE, self.LAYAWAY,
+									 self.PAYMENT, self.REDEEM]:
+			self.drawer.balance += self.total
+		elif self.transaction_type in [self.BUY, self.PAWN]:
+			self.drawer.balance -= self.total
+
+		self.drawer.save(user)
+
+		# Alter pawn lawn 
 		if self.transaction_type in [self.PAYMENT, self.REDEEM]:
 			for item in pawn_loan.items.all():
 				price = (item.price_in / pawn_loan.principle_amount) * self.subtotal
@@ -88,7 +104,7 @@ class Transaction(models.Model):
 
 			pawn_loan.transactions.add(self)
 
-		elif create_pawnloan:
+		if create_pawnloan:
 			amount_due = amount_due=self.total * Decimal(0.20)
 			date_due = timezone.now().date() + timedelta(days=30)
 

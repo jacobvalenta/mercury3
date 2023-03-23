@@ -3,6 +3,7 @@ from decimal import Decimal
 from django import forms
 
 from mercury3.customers.models import Customer
+from mercury3.drawers.models import Drawer
 from mercury3.items.models import Item
 from mercury3.pawn_loans.models import PawnLoan
 
@@ -11,10 +12,11 @@ from .models import Transaction, TransactionItem
 
 class TransactionForm(forms.ModelForm):
 	# customer = forms.ModelChoiceField(queryset=Customer.objects.all())
+	drawer = forms.ModelChoiceField(queryset=Drawer.objects.open())
 
 	class Meta:
 		model = Transaction
-		fields = ["customer", "transaction_type"]
+		fields = ["customer", "transaction_type", "drawer"]
 
 	def save(self, item_data, user, commit=True, *args, **kwargs):
 		transaction = super().save(commit=False, *args, **kwargs)
@@ -66,6 +68,8 @@ class PayOrRedeemPawnForm(forms.Form):
 		(Transaction.REDEEM, "Redeem")
 	)
 
+	drawer = forms.ModelChoiceField(queryset=Drawer.objects.open())
+
 	customer = forms.ModelChoiceField(queryset=Customer.objects.all())
 	pawn_loan = forms.ModelChoiceField(queryset=PawnLoan.objects.active())
 
@@ -75,6 +79,7 @@ class PayOrRedeemPawnForm(forms.Form):
 
 	def save(self, user, *args, **kwargs):
 		transaction_type = self.cleaned_data['transaction_type']
+		drawer = self.cleaned_data['drawer']
 		customer = self.cleaned_data['customer']
 		subtotal = self.cleaned_data['payment_amount']
 		tax = subtotal * Decimal(0.06)
@@ -84,10 +89,11 @@ class PayOrRedeemPawnForm(forms.Form):
 
 		transaction = Transaction(transaction_type=transaction_type,
 								  customer=customer,
+								  drawer=drawer,
 								  subtotal=subtotal,
 								  tax=tax,
 								  total=total,
 								  employee=user.employee)
-		transaction.save(pawn_loan=pawn_loan)
+		transaction.save(user=user, pawn_loan=pawn_loan)
 
 		return transaction

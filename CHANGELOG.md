@@ -2,9 +2,12 @@
 
 ## v3.0.7
 
-? Drawers
-? More logs (Transactions, Item Location Change)
-? More tests (Employees)
+- Drawers
+- Store Balance
+- Fix Item search
+- Log Transactions
+? Log Item location Change
+? More tests (Employees create and update)
 
 ## v3.0.6
 

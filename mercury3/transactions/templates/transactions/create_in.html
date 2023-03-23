@@ -208,7 +208,15 @@
 				<input type="radio" value="pawn" name="transaction_type" checked> <label for="layaway">Pawn</label>
 			</div>
 			<hr />
-			<br />
+
+			<p>
+				<select style="float: right;" name="drawer">
+					{% for pk, drawer in form.fields.drawer.choices %}
+					    <option value="{{ pk }}"{% if form.fields.drawer.value == pk %} selected{% endif %}>{{ drawer }}</option>
+					{% endfor %}
+				</select>
+				Drawer:
+			</p>
 
 			<div id="totals" style="text-align: right;">
 				Subtotal: <span id="subtotal">$0.00</span><br />
