@@ -30,5 +30,9 @@ class SetItemLocationForm(forms.ModelForm):
 		model = Item
 		fields = ["location"]
 
-	# def save(self, *args, commit=False, **kwargs):
-		
+	def save(self, user, commit=True, **kwargs):
+		if commit:
+			location = self.cleaned_data['location']
+			self.instance.relocate(user=user, location=location)
+
+		return self.instance

@@ -54,32 +54,24 @@ class SetItemLocationView(UpdateView):
 
 class LocationAssignmentView(ModelFormSetView):
 	model = Item
-	factory_kwargs = {'extra': 0}
+	factory_kwargs = {'extra': 0, "max_num": None}
 	queryset = Item.objects.filter(location=None)
 	form_class = SetItemLocationForm
 	template_name = "items/location_assignment.html"
-	# succes_url = reverse_lazy("main-page")
 
 	def formset_valid(self, formset):
-		print("formset valid")
 		for form in formset:
-			form.save()
+			if form.cleaned_data['location']:
+				form.save(user=self.request.user)
 
 		return HttpResponseRedirect(reverse("items:location-assignment"))
-
-	# def formset_invalid(self, formset):
-	# 	print("Invalid")
-	# 	print(formset)
 
 	def get_context_data(self, *args, **kwargs):
 		data = super().get_context_data(*args, **kwargs)
 
 		items = self.queryset
 
-		items_and_forms_zipped = zip(items, data['formset'])
-
 		data.update({
-			'items_and_forms_zipped': items_and_forms_zipped,
 			'items_count': items.count()
 		})
 		return data

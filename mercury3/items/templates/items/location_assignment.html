@@ -9,9 +9,9 @@
 		{% csrf_token %}
 		{{ formset.management_form }}
 
-		{% for item, form in items_and_forms_zipped %}
+		{% for form in formset %}
 			<div>
-				<div style="display: inline-block;"># {{ item.pk|stringformat:"07d" }} {{ item }}</div>
+				<div style="display: inline-block;"># {{ form.instance.pk|stringformat:"07d" }} {{ form.instance }}</div>
 				<div style="display: inline-block;">{{ form.as_p }}</div>
 			</div>
 			<hr />

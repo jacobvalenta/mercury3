@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.db import models
 from django.db.models import Q
 
@@ -41,6 +42,16 @@ class Item(models.Model):
 
 	def get_absolute_url(self):
 		return "/items/{0}/".format(self.pk)
+
+	def relocate(self, user, location):
+		Log = apps.get_model('logs.Log')
+
+		self.location = location
+		self.save()
+
+		msg_template = "moved item ({}) to {}"
+		msg = msg_template.format(str(self), self.location.name)
+		Log.objects.create(user=user, message=msg)
 
 
 class InventoryAudit(models.Model):
