@@ -56,16 +56,17 @@ class EmployeeForm(forms.ModelForm):
 		model = Employee
 		fields = ["first_name", "last_name", "store"]
 
-	def save(self, user, commit=True):
+	def save(self, employee_user, user, commit=True):
 		if self.instance.pk:
 			employee = self.instance
 			employee.store = self.cleaned_data['store']
 			employee.first_name = self.cleaned_data['first_name']
 			employee.last_name = self.cleaned_data['last_name']
 		else:
-			employee = Employee(user=user, store=self.cleaned_data['store'],
+			employee = Employee(user=employee_user,
+			                    store=self.cleaned_data['store'],
 								first_name=self.cleaned_data['first_name'],
 								last_name=self.cleaned_data['last_name'])
 		if commit:
-			employee.save()
+			employee.save(user=user)
 		return employee

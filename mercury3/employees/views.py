@@ -69,13 +69,9 @@ class EmployeeFormsMixin(object):
 			last_name = employee_form.cleaned_data['last_name']
 
 			user = user_form.save(first_name, last_name)
-
-			employee = employee_form.save(user, commit=False)
+			employee = employee_form.save(employee_user=user,
+			                              user=request.user)
 			
-			# Maybe move _history_user assignment to models.py?
-			employee._history_user = request.user
-			employee.save()
-
 			success_url = reverse('employees:detail',
 			                      kwargs={'pk': employee.pk})
 			return HttpResponseRedirect(success_url)

@@ -21,20 +21,26 @@ class Employee(models.Model):
 	def __str__(self):
 		return "{0} {1}".format(self.first_name, self.last_name)
 
-	def save(self, **kwargs):
+	def save(self, user, **kwargs):
 		Log = apps.get_model('logs.Log')
-
+		created = False
+		
 		if not self.pk:
+			created = True
+
+		self._history_user = user
+
+		super().save(**kwargs)
+
+		if created:
 			log = Log(user=self._history_user,
 				message="created Employee ({0})".format(str(self)))
 			log.save()
-
 		else:
 			log = Log(user=self._history_user,
 				message="edited Employee ({0})".format(str(self)))
 			log.save()
 
-		super().save(**kwargs)
 
 	@property
 	def _history_user(self):
