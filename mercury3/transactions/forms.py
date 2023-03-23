@@ -35,7 +35,7 @@ class TransactionForm(forms.ModelForm):
 		transaction.total = total
 
 		if commit:
-			transaction.save()
+			transaction.save(user=user)
 
 			for item in item_data:
 				titem = TransactionItem(transaction=transaction,

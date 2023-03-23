@@ -43,8 +43,9 @@ class Transaction(models.Model):
 		"""A direct URL for the Transaction."""
 		return "/transactions/{0}/".format(self.pk)
 
-	def save(self, pawn_loan=None, *args, **kwargs):
+	def save(self, user, pawn_loan=None, **kwargs):
 		Item = apps.get_model('items.Item')
+		Log = apps.get_model('logs.Log')
 
 		create_pawnloan = False
 		if not self.pk and self.transaction_type == self.PAWN:
@@ -52,7 +53,13 @@ class Transaction(models.Model):
 
 		self.store = self.employee.store
 
-		super().save(*args, **kwargs)
+		if not self.pk:
+			msg_template = "created a new {} transaction for $@protected({})"
+			msg = msg_template.format(self.get_transaction_type_display(),
+			                          self.total)
+			Log.objects.create(user=user, message=msg)
+
+		super().save(**kwargs)
 
 		if self.transaction_type in [self.PAYMENT, self.REDEEM]:
 			for item in pawn_loan.items.all():
