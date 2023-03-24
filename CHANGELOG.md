@@ -6,8 +6,8 @@
 - Store Balance
 - Fix Item search
 - Log Transactions
-? Log Item location Change
-? More tests (Employees create and update)
+- Log Item location Change
+- More tests (Employee create and update)
 
 ## v3.0.6
 
