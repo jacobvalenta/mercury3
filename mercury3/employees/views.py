@@ -61,6 +61,11 @@ class EmployeeFormsMixin(object):
 		return self.employee_form
 
 	def post(self, request, pk=None):
+		try:
+			self.object = self.get_object()
+		except AttributeError:
+			self.object = None
+
 		user_form = self.get_user_form()
 		employee_form = self.get_employee_form()
 

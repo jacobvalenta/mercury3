@@ -3,7 +3,8 @@
     "model": "stores.store",
     "pk": 1,
     "fields": {
-        "name": "Testville"
+        "name": "Testville",
+        "balance": "100.00"
     }
 }
 ]

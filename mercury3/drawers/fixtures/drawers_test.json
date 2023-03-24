@@ -1,0 +1,23 @@
+[
+{
+    "model": "drawers.draweridentifier",
+    "pk": 1,
+    "fields": {
+        "name": "#001"
+    }
+},
+{
+    "model": "drawers.drawer",
+    "pk": 1,
+    "fields": {
+        "identifier_key": 1,
+        "store": 1,
+        "balance": "100.00",
+        "is_open": true,
+        "opened_by": 1,
+        "closed_by": 1,
+        "opened_at": "2023-03-20T13:00:10.000Z",
+        "closed_at": null
+    }
+}
+]

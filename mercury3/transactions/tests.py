@@ -13,8 +13,8 @@ from mercury3.utils import TWO_SECONDS, get_pk_from_url
 from .models import Transaction
 
 class TransactionTestCase(TestCase):
-	fixtures = ["stores_test.json", "customers_test.json",
-				"employees_test.json"]
+	fixtures = ["stores_test.json", "drawers_test.json",
+				"customers_test.json", "employees_test.json"]
 
 	def test_in_transaction_200(self):
 		"""Test In Transaction"""
@@ -38,6 +38,7 @@ class TransactionTestCase(TestCase):
 			'form-0-price_in': "1.00",
 			'form-INITIAL_FORMS': 0,
 			'form-TOTAL_FORMS': 1,
+			'drawer': 1,
 			'transaction_type': 'buy'
 		}
 
@@ -69,6 +70,7 @@ class TransactionTestCase(TestCase):
 			'form-0-price_in': "1.00",
 			'form-INITIAL_FORMS': 0,
 			'form-TOTAL_FORMS': 1,
+			'drawer': 1,
 			'transaction_type': 'pawn'
 		}
 
@@ -104,6 +106,7 @@ class TransactionTestCase(TestCase):
 			'form-0-price_in': "1.00",
 			'form-INITIAL_FORMS': 0,
 			'form-TOTAL_FORMS': 1,
+			'drawer': 1,
 			'transaction_type': 'pawn'
 		}
 
@@ -122,6 +125,7 @@ class TransactionTestCase(TestCase):
 			'customer': 1, 
 			'pawn_loan': pawn_loan.pk,
 			'payment_amount': pawn_loan.redeem_amount,
+			'drawer': 1,
 			'transaction_type': 'redeem'
 		}
 		redeem_url = reverse('transactions:pay')
