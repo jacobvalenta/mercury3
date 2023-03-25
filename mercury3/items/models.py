@@ -53,6 +53,24 @@ class Item(models.Model):
 		msg = msg_template.format(str(self), self.location.name)
 		Log.objects.create(user=user, message=msg)
 
+class Bucket(models.Model):
+	name = models.CharField(max_length=18)
+
+	amount_in = models.DecimalField(max_digits=9, decimal_places=2,
+	                                default=0)
+	item_count = models.PositiveIntegerField(default=0)
+
+	def __str__(self):
+		return self.name
+
+	def remove_item(self):
+		if self.item_count == 0:
+			return
+
+		self.amount_in -= self.amount_in / self.item_count
+		self.item_count -= 1
+
+		self.save()
 
 class InventoryAudit(models.Model):
 	time_start = models.DateTimeField(auto_now_add=True)
