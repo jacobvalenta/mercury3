@@ -1,0 +1,23 @@
+{
+  "name": "Mercury Pawn 3",
+  "description": "Open Source Pawn Shop Management",
+  "repository": "https://github.com/jacobvalenta/mercury3",
+  "keywords": ["python", "django"],
+  "env": {
+    "SECRET_TOKEN": {
+      "description": "Django's secret key for signing sessions.",
+      "generator": "secret"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
