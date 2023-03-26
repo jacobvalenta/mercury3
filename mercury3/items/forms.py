@@ -2,7 +2,7 @@ from django import forms
 
 from mercury3.stores.models import Location
 
-from .models import Item
+from .models import Item, Bucket
 
 class ItemForm(forms.ModelForm):
 	class Meta:
@@ -34,5 +34,19 @@ class SetItemLocationForm(forms.ModelForm):
 		if commit:
 			location = self.cleaned_data['location']
 			self.instance.relocate(user=user, location=location)
+
+		return self.instance
+
+class MoveItemToBucketForm(forms.ModelForm):
+	bucket = forms.ModelChoiceField(queryset=Bucket.objects.all())
+
+	class Meta:
+		model = Item
+		fields = ["bucket"]
+
+	def save(self, user, commit=True, **kwargs):
+		if commit:
+			self.instance.add_to_bucket(user=user,
+			                            bucket=self.cleaned_data["bucket"])
 
 		return self.instance

@@ -9,7 +9,7 @@ from django.views.generic.edit import UpdateView
 
 from extra_views import ModelFormSetView
 
-from .forms import ItemScanForm, SetItemLocationForm
+from .forms import ItemScanForm, SetItemLocationForm, MoveItemToBucketForm
 from .models import Item, InventoryAudit
 
 class ItemSearchView(TemplateView):
@@ -51,6 +51,16 @@ class SetItemLocationView(UpdateView):
 			'pk': self.kwargs['pk']
 		})
 		return data
+
+class MoveItemToBucketView(UpdateView):
+	model = Item
+	form_class = MoveItemToBucketForm
+	template_name = "items/move_to_bucket.html"
+
+	def form_valid(self, form):
+		form.save(user=self.request.user)
+
+		return HttpResponseRedirect(self.get_success_url())
 
 class LocationAssignmentView(ModelFormSetView):
 	model = Item

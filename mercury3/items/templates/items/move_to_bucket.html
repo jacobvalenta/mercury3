@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block "content" %}
+	<h2 class="text-center">Move to bucket</h2>
+
+	<p class="text-center">
+		#{{ object.pk|stringformat:"07d" }}
+	</p>
+
+	<form class="text-center" action="" method="POST">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<button type="submit">Move</button>
+	</form>
+{% endblock %}

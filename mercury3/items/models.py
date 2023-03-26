@@ -8,6 +8,7 @@ class Item(models.Model):
 	SALEABLE = "saleable"
 	SOLD = "sold"
 	HOLD = "hold"
+	BUCKET = "bucket"
 	POLICE_HOLD = "police_hold"
 	MISSING = "missing"
 
@@ -17,6 +18,7 @@ class Item(models.Model):
 		(SALEABLE, "Saleable"),
 		(SOLD, "Sold"),
 		(HOLD, "Hold"),
+		(BUCKET, "Bucketed"),
 		(POLICE_HOLD, "Police Hold"),
 		(MISSING, "Missing")
 	)
@@ -51,6 +53,26 @@ class Item(models.Model):
 
 		msg_template = "moved item ({}) to {}"
 		msg = msg_template.format(str(self), self.location.name)
+		Log.objects.create(user=user, message=msg)
+
+	def add_to_bucket(self, user, bucket):
+		# Update Bucket
+		bucket.item_count += 1
+		bucket.amount_in += self.price_in
+
+		bucket.save()
+
+		# Update Item
+		self.status = Item.BUCKET
+		self.price_out = self.price_in
+
+		self.save()
+
+		# Logs
+		Log = apps.get_model('logs.Log')
+
+		msg_template = "moved item, {} to the bucket, {}"
+		msg = msg_template.format(str(self), bucket.name)
 		Log.objects.create(user=user, message=msg)
 
 class Bucket(models.Model):
