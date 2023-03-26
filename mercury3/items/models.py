@@ -37,6 +37,9 @@ class Item(models.Model):
 	location = models.ForeignKey('stores.Location', blank=True, null=True,
 								 on_delete=models.SET_NULL)
 
+	bucket = models.ForeignKey('Bucket', blank=True, null=True,
+	                           on_delete=models.SET_NULL)
+
 	def __str__(self):
 		desc = "{0} {1}".format(self.make if self.make else '',
 							    self.model if self.model else '').strip()
@@ -58,13 +61,13 @@ class Item(models.Model):
 	def add_to_bucket(self, user, bucket):
 		# Update Bucket
 		bucket.item_count += 1
-		bucket.amount_in += self.price_in
+		bucket.price_in += self.price_in
 
 		bucket.save()
 
 		# Update Item
+		self.bucket = bucket
 		self.status = Item.BUCKET
-		self.price_out = self.price_in
 
 		self.save()
 
@@ -75,24 +78,40 @@ class Item(models.Model):
 		msg = msg_template.format(str(self), bucket.name)
 		Log.objects.create(user=user, message=msg)
 
+
+	def remove_from_bucket(self, user):
+		# Update Bucket
+		if self.bucket.item_count == 0:
+			return
+
+		self.bucket.price_in -= self.bucket.price_in / self.bucket.item_count
+		self.bucket.item_count -= 1
+
+		self.bucket.save()
+
+		bucket = self.bucket # For the log after it's removed from item.
+
+		# Update Item
+		self.bucket = None
+		self.status = Item.SALEABLE
+
+		self.save()
+
+		# Update Log
+		Log = apps.get_model('logs.Log')
+		msg_template = "removed item {} from bucket {}"
+		msg = msg_template.format(str(self), str(bucket))
+		Log.objects.create(user=user, message=msg)
+
 class Bucket(models.Model):
 	name = models.CharField(max_length=18)
 
-	amount_in = models.DecimalField(max_digits=9, decimal_places=2,
+	price_in = models.DecimalField(max_digits=9, decimal_places=2,
 	                                default=0)
 	item_count = models.PositiveIntegerField(default=0)
 
 	def __str__(self):
 		return self.name
-
-	def remove_item(self):
-		if self.item_count == 0:
-			return
-
-		self.amount_in -= self.amount_in / self.item_count
-		self.item_count -= 1
-
-		self.save()
 
 class InventoryAudit(models.Model):
 	time_start = models.DateTimeField(auto_now_add=True)

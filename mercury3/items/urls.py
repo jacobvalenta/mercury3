@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (ItemSearchView, ItemDetailView, SetItemLocationView,
                     LocationAssignmentView, MoveItemToBucketView,
+                    RemoveItemFromBucketView,
                     InventoryAuditView, InventoryAuditDetailView,
                     audit_scan_item_view, audit_finish, audit_reopen_view,
                     audit_make_missing_items_view,
@@ -16,6 +17,8 @@ urlpatterns = [
          name="set-location"),
     path('<int:pk>/move_to_bucket/', MoveItemToBucketView.as_view(),
          name="move-to-bucket"),
+    path('<int:pk>/remove_from_bucket/', RemoveItemFromBucketView.as_view(),
+         name="remove-from-bucket"),
 
     # Audits
     path('audit/', InventoryAuditView.as_view(), name="inventory-audit"),

@@ -62,6 +62,18 @@ class MoveItemToBucketView(UpdateView):
 
 		return HttpResponseRedirect(self.get_success_url())
 
+class RemoveItemFromBucketView(DetailView):
+	model = Item
+	template_name = "items/move_to_bucket.html"
+
+	def get(self, request, pk):
+		item = self.get_object()
+		item.remove_from_bucket(user=request.user)
+
+		return HttpResponseRedirect(reverse('items:detail',
+		                                    kwargs={'pk': item.pk}))
+
+
 class LocationAssignmentView(ModelFormSetView):
 	model = Item
 	factory_kwargs = {'extra': 0, "max_num": None}

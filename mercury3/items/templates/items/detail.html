@@ -38,5 +38,9 @@
 
 	<h3>Actions</h3>
 	<a href="{% url 'items:set-location' object.pk %}">Set Location</a><br />
-	<a href="{% url 'items:move-to-bucket' object.pk %}">Move to bucket</a>
+	{% if object.status == object.BUCKET %}
+		<a href="{% url 'items:remove-from-bucket' object.pk %}">Remove from bucket</a>
+	{% else %}
+		<a href="{% url 'items:move-to-bucket' object.pk %}">Move to bucket</a>
+	{% endif %}
 {% endblock %}
